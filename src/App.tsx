@@ -978,8 +978,8 @@ function AdminView({ services }: { services: Service[] }) {
           <h2 className="text-4xl font-black">Área de <span className="text-gold">Gestão</span></h2>
           <p className="opacity-40 text-xs uppercase tracking-widest font-bold">Acesso Restrito</p>
         </header>
-        
-        <form 
+
+        <form
           onSubmit={async (e) => {
             e.preventDefault();
             setIsLoggingIn(true);
@@ -991,20 +991,20 @@ function AdminView({ services }: { services: Service[] }) {
           className="bg-white p-10 rounded-[32px] border border-ink/5 shadow-2xl space-y-6"
         >
           <div className="space-y-4">
-            <input 
+            <input
               type="email" placeholder="E-mail" required
               value={email} onChange={e => setEmail(e.target.value)}
               className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
             />
-            <input 
+            <input
               type="password" placeholder="Senha" required
               value={password} onChange={e => setPassword(e.target.value)}
               className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
             />
           </div>
           {authError && <p className="text-red-500 text-[10px] text-center font-bold uppercase tracking-widest">{authError}</p>}
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoggingIn}
             className="w-full py-6 bg-gold text-white rounded-2xl font-black uppercase tracking-widest shadow-xl active:scale-95 disabled:opacity-50 transition-all"
           >
@@ -1026,51 +1026,52 @@ function AdminView({ services }: { services: Service[] }) {
           <h2 className="text-4xl md:text-6xl font-black tracking-tight">Painel de <span className="text-gold">Gestão</span></h2>
           <p className="text-[10px] uppercase tracking-[0.4em] opacity-40">Bem-vinda, {user.email?.split('@')[0]}</p>
         </div>
-        
+
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={() => supabase.auth.signOut()}
             className="px-6 py-3 border border-red-100 text-red-600 rounded-full text-[9px] uppercase tracking-widest font-black hover:bg-red-50 transition-all"
           >
             Sair 🚪
           </button>
           <div className="flex gap-2 bg-ink/5 p-1.5 rounded-full backdrop-blur-md">
-          <button
-            onClick={() => setActiveTab('agenda')}
-            className={cn(
-              "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
-              activeTab === 'agenda' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
-            )}
-          >
-            Agenda
-          </button>
-          <button
-            onClick={() => setActiveTab('clientes')}
-            className={cn(
-              "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
-              activeTab === 'clientes' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
-            )}
-          >
-            Clientes
-          </button>
-          <button
-            onClick={() => setActiveTab('despesas')}
-            className={cn(
-              "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
-              activeTab === 'despesas' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
-            )}
-          >
-            Despesas
-          </button>
-          <button
-            onClick={() => setActiveTab('servicos')}
-            className={cn(
-              "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
-              activeTab === 'servicos' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
-            )}
-          >
-            Catálogo
-          </button>
+            <button
+              onClick={() => setActiveTab('agenda')}
+              className={cn(
+                "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
+                activeTab === 'agenda' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
+              )}
+            >
+              Agenda
+            </button>
+            <button
+              onClick={() => setActiveTab('clientes')}
+              className={cn(
+                "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
+                activeTab === 'clientes' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
+              )}
+            >
+              Clientes
+            </button>
+            <button
+              onClick={() => setActiveTab('despesas')}
+              className={cn(
+                "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
+                activeTab === 'despesas' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
+              )}
+            >
+              Despesas
+            </button>
+            <button
+              onClick={() => setActiveTab('servicos')}
+              className={cn(
+                "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
+                activeTab === 'servicos' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
+              )}
+            >
+              Catálogo
+            </button>
+          </div>
         </div>
       </header>
 
