@@ -65,7 +65,6 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
     { id: 'catalog', label: 'Serviços', icon: '✨' },
     { id: 'booking', label: 'Agendar', icon: '📅' },
     { id: 'fidelity', label: 'Clube', icon: '💖' },
-    { id: 'admin', label: 'Gestão', icon: '⚙️' },
   ];
 
   return (
@@ -907,6 +906,10 @@ function FidelityView() {
 function AdminView({ services }: { services: Service[] }) {
   const { user, loading: authLoading } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState<'agenda' | 'clientes' | 'despesas' | 'servicos'>('agenda');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [authError, setAuthError] = useState('');
   const [bookings, setBookings] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -970,18 +973,44 @@ function AdminView({ services }: { services: Service[] }) {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto py-32 text-center space-y-12">
-        <div className="space-y-6">
-          <h2 className="serif text-6xl">Acesso Restrito</h2>
-          <p className="opacity-50 text-sm">Área exclusiva para gestão do estúdio.</p>
-        </div>
-        <button
-          onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
-          className="w-full py-6 bg-ink text-paper flex items-center justify-center gap-4 hover:bg-gold transition-all duration-700 rounded-full shadow-2xl"
+      <div className="max-w-md mx-auto py-20 space-y-12">
+        <header className="text-center space-y-4">
+          <h2 className="text-4xl font-black">Área de <span className="text-gold">Gestão</span></h2>
+          <p className="opacity-40 text-xs uppercase tracking-widest font-bold">Acesso Restrito</p>
+        </header>
+        
+        <form 
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setIsLoggingIn(true);
+            setAuthError('');
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) setAuthError('Credenciais inválidas. Tente novamente.');
+            setIsLoggingIn(false);
+          }}
+          className="bg-white p-10 rounded-[32px] border border-ink/5 shadow-2xl space-y-6"
         >
-          <span className="text-2xl">🔑</span>
-          <span className="text-[11px] uppercase tracking-[0.4em] font-bold">Entrar com Google</span>
-        </button>
+          <div className="space-y-4">
+            <input 
+              type="email" placeholder="E-mail" required
+              value={email} onChange={e => setEmail(e.target.value)}
+              className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
+            />
+            <input 
+              type="password" placeholder="Senha" required
+              value={password} onChange={e => setPassword(e.target.value)}
+              className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
+            />
+          </div>
+          {authError && <p className="text-red-500 text-[10px] text-center font-bold uppercase tracking-widest">{authError}</p>}
+          <button 
+            type="submit" 
+            disabled={isLoggingIn}
+            className="w-full py-6 bg-gold text-white rounded-2xl font-black uppercase tracking-widest shadow-xl active:scale-95 disabled:opacity-50 transition-all"
+          >
+            {isLoggingIn ? 'Entrando...' : 'Entrar no Painel 🔑'}
+          </button>
+        </form>
       </div>
     );
   }
@@ -992,13 +1021,20 @@ function AdminView({ services }: { services: Service[] }) {
 
   return (
     <div className="space-y-16 pb-32">
-      <header className="flex flex-col md:flex-row justify-between items-center gap-12">
-        <div className="space-y-2 text-center md:text-left">
-          <h2 className="serif text-5xl md:text-7xl">Painel de <span className="italic text-gold">Gestão</span></h2>
-          <p className="text-[10px] uppercase tracking-[0.4em] opacity-40">Bem-vinda de volta, {user.displayName}</p>
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+        <div className="space-y-2">
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight">Painel de <span className="text-gold">Gestão</span></h2>
+          <p className="text-[10px] uppercase tracking-[0.4em] opacity-40">Bem-vinda, {user.email?.split('@')[0]}</p>
         </div>
-
-        <div className="flex gap-4 bg-ink/5 p-2 rounded-full backdrop-blur-md">
+        
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => supabase.auth.signOut()}
+            className="px-6 py-3 border border-red-100 text-red-600 rounded-full text-[9px] uppercase tracking-widest font-black hover:bg-red-50 transition-all"
+          >
+            Sair 🚪
+          </button>
+          <div className="flex gap-2 bg-ink/5 p-1.5 rounded-full backdrop-blur-md">
           <button
             onClick={() => setActiveTab('agenda')}
             className={cn(
@@ -1876,6 +1912,16 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
 
 function App() {
   const [view, setView] = useState('home');
+
+  useEffect(() => {
+    const handleHash = () => {
+      if (window.location.hash === '#admin') setView('admin');
+      if (window.location.hash === '#home') setView('home');
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [loadingServices, setLoadingServices] = useState(true);
