@@ -4,12 +4,12 @@
 @theme {
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "Montserrat", sans-serif;
-  --font-display: "Playfair Display", serif;
-  --color-paper: #f5f2ed;
+  --font-display: "Montserrat", sans-serif; /* Simplified to Montserrat for modern look */
+  --color-paper: #ffffff; /* Brighter white */
   --color-ink: #1a1a1a;
-  --color-gold: #c5a059;
-  --color-olive: #5a5a40;
-  --color-accent: #8b4513; /* SaddleBrown for a rich accent */
+  --color-gold: #ff3366; /* Vibrant Pink/Magenta like competitor */
+  --color-olive: #fce4ec; /* Soft Pink for backgrounds */
+  --color-accent: #c2185b; /* Deeper Pink for accents */
 }
 
 @utility perspective-1000 {

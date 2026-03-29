@@ -62,30 +62,30 @@ function useFCM() {
 function Navbar({ activeView, setView }: { activeView: string; setView: (v: string) => void }) {
   const navItems = [
     { id: 'home', label: 'Início', icon: '🏠' },
-    { id: 'catalog', label: 'Catálogo', icon: '✨' },
+    { id: 'catalog', label: 'Serviços', icon: '✨' },
     { id: 'booking', label: 'Agendar', icon: '📅' },
-    { id: 'fidelity', label: 'Fidelidade', icon: '💎' },
-    { id: 'admin', label: 'Gestão', icon: '💼' },
+    { id: 'fidelity', label: 'Clube', icon: '💖' },
+    { id: 'admin', label: 'Gestão', icon: '⚙️' },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-paper/90 backdrop-blur-2xl border-t border-ink/5 z-50 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-2xl border-t border-ink/5 z-50 pb-safe">
       <div className="flex justify-around items-center h-20 px-4">
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setView(item.id)}
             className={cn(
-              "flex flex-col items-center gap-1.5 transition-all duration-500 relative py-2 px-4",
+              "flex flex-col items-center gap-1.5 transition-all duration-300 relative py-2 px-4",
               activeView === item.id ? "text-gold scale-110" : "text-ink/30"
             )}
           >
             <span className="text-2xl">{item.icon}</span>
-            <span className="text-[8px] uppercase tracking-[0.2em] font-black">{item.label}</span>
+            <span className="text-[9px] uppercase tracking-[0.1em] font-bold">{item.label}</span>
             {activeView === item.id && (
-              <motion.div 
+              <motion.div
                 layoutId="nav-active-dot"
-                className="absolute -top-1 w-1 h-1 bg-gold rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"
+                className="absolute -top-1 w-1 h-1 bg-gold rounded-full shadow-[0_0_10px_rgba(255,51,102,0.8)]"
               />
             )}
           </button>
@@ -99,13 +99,13 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
   const [currentImg, setCurrentImg] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  
+
   return (
     <motion.div
       ref={cardRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative bg-white/40 backdrop-blur-sm rounded-[40px] overflow-hidden border border-ink/5 shadow-2xl transition-all duration-700"
+      className="group relative bg-white rounded-[32px] overflow-hidden border border-ink/5 shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(255,51,102,0.1)]"
     >
       {/* Image Carousel */}
       <div className="relative aspect-[4/5] overflow-hidden">
@@ -113,84 +113,60 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
           <motion.img
             key={currentImg}
             src={service.images[currentImg]}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
         </AnimatePresence>
-        
-        {/* Glass Overlay (Always visible on mobile for clarity) */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-transparent" />
-        
-        {/* Quick Info Overlay */}
-        <div className="absolute inset-x-6 bottom-20 z-20">
-          <div className="glass p-4 rounded-2xl space-y-1 border border-white/10">
-            <div className="flex justify-between items-center">
-              <span className="text-[8px] uppercase tracking-[0.3em] font-black text-gold">Destaque Premium ⭐</span>
-              <span className="text-[8px] uppercase tracking-[0.3em] opacity-40 text-paper">✨</span>
-            </div>
-            <p className="text-[10px] text-paper/70 leading-relaxed italic line-clamp-1">"{service.description.slice(0, 50)}..."</p>
-          </div>
-        </div>
 
-        {/* Carousel Controls */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-30">
-          {service.images.map((_, i) => (
-            <button
-              key={i}
-              onClick={(e) => { e.stopPropagation(); setCurrentImg(i); }}
-              className={cn(
-                "w-8 h-1 rounded-full transition-all duration-500",
-                currentImg === i ? "bg-gold w-12" : "bg-paper/30"
-              )}
-            />
-          ))}
+        {/* Soft Pink Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent" />
+
+        {/* Quick Info Overlay */}
+        <div className="absolute inset-x-6 bottom-6 z-20">
+          <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl space-y-1 border border-white/20">
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] uppercase tracking-widest font-black text-gold">Procedimento Ativo 💖</span>
+              <span className="text-gold text-xs">✨</span>
+            </div>
+            <p className="text-[10px] text-ink/60 leading-relaxed font-medium line-clamp-1">{service.description}</p>
+          </div>
         </div>
 
         {/* Floating Badges */}
         <div className="absolute top-6 left-6 flex flex-col gap-3 z-20">
-          {service.video && (
-            <div className="w-10 h-10 rounded-full bg-paper/20 backdrop-blur-md flex items-center justify-center text-paper border border-white/30 shadow-xl">
-              🎬
-            </div>
-          )}
-          <div className="w-10 h-10 rounded-full bg-gold/20 backdrop-blur-md flex items-center justify-center text-gold border border-gold/30 shadow-xl">
-            💎
+          <div className="px-3 py-1.5 rounded-full bg-gold/90 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-widest shadow-lg">
+            R$ {service.price}
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-8 space-y-6 relative">
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <h3 className="serif text-3xl tracking-tight">{service.name}</h3>
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] uppercase tracking-[0.2em] opacity-40 font-bold">⏱️ {service.duration}</span>
-              <div className="w-1 h-1 rounded-full bg-gold/40" />
-              <span className="text-[9px] uppercase tracking-[0.2em] text-gold font-black">Elite 👑</span>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="serif text-2xl text-gold">R$ {service.price}</p>
+      <div className="p-8 space-y-6">
+        <div className="space-y-1">
+          <h3 className="text-2xl font-bold tracking-tight">{service.name}</h3>
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] uppercase tracking-widest opacity-40 font-bold">⏱️ {service.duration}</span>
+            <div className="w-1 h-1 rounded-full bg-gold/40" />
+            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Design Exclusivo 💅</span>
           </div>
         </div>
-        
+
         <div className="flex gap-3">
           <button
             onClick={() => onSelect(service)}
-            className="flex-[2] py-5 bg-ink text-paper rounded-2xl text-[9px] uppercase tracking-[0.3em] font-black shadow-xl active:scale-95 transition-all"
+            className="flex-[2] py-5 bg-gold text-white rounded-2xl text-[10px] uppercase tracking-widest font-black shadow-[0_10px_20px_rgba(255,51,102,0.3)] active:scale-95 transition-all"
           >
-            Agendar 📅
+            Agendar Agora 📅
           </button>
-          <button 
+          <button
             onClick={onShowDetail}
-            className="flex-1 py-5 border border-ink/10 rounded-2xl text-[9px] uppercase tracking-[0.3em] font-black active:bg-ink/5 transition-all"
+            className="flex-1 py-5 border border-ink/10 rounded-2xl text-[10px] uppercase tracking-widest font-black active:bg-ink/5 transition-all"
           >
-            Detalhes 👁️
+            Info
           </button>
         </div>
       </div>
@@ -200,94 +176,80 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
 
 function HomeView({ onStart }: { onStart: () => void }) {
   return (
-    <div className="min-h-[calc(100vh-80px)] flex flex-col -mt-12 -mx-6 relative overflow-hidden bg-paper">
-      {/* Hero Image Section (Mobile focus) */}
-      <div className="relative h-[50vh] w-full overflow-hidden">
-        <motion.img 
-          initial={{ scale: 1.2, opacity: 0 }}
+    <div className="min-h-[calc(100vh-80px)] flex flex-col -mt-12 -mx-6 relative overflow-hidden bg-white">
+      {/* Hero Section */}
+      <div className="relative h-[65vh] w-full overflow-hidden">
+        <motion.img
+          initial={{ scale: 1.1, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 2, ease: "easeOut" }}
+          transition={{ duration: 1.5 }}
           src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&q=80&w=1000"
           className="w-full h-full object-cover"
           alt="Lash Art"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/20 to-transparent" />
-        
-        {/* Floating Badge */}
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          className="absolute bottom-12 left-8 glass px-4 py-2 rounded-full border border-white/20 flex items-center gap-2"
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent" />
+
+        {/* Modern Label */}
+        <motion.div
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="absolute bottom-16 left-8 bg-gold px-5 py-2.5 rounded-full text-white shadow-xl flex items-center gap-3"
         >
-          <span className="text-gold animate-pulse">●</span>
-          <span className="text-[9px] uppercase tracking-[0.2em] font-bold">Atendimento Premium 💎</span>
+          <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+          <span className="text-[10px] uppercase tracking-widest font-black">Agende pelo WhatsApp 💖</span>
         </motion.div>
       </div>
 
       {/* Content Section */}
-      <div className="flex-1 px-8 pb-12 space-y-10 relative z-10 -mt-16">
-        <motion.div 
+      <div className="flex-1 px-8 pb-12 space-y-8 relative z-10 -mt-8 bg-white rounded-t-[40px]">
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="space-y-6"
+          className="space-y-4 pt-10"
         >
           <div className="flex items-center gap-3 text-gold">
-            <div className="h-px w-8 bg-gold" />
-            <span className="text-[9px] uppercase tracking-[0.4em] font-black">Lash Studio Pro ✨</span>
+            <span className="text-[11px] uppercase tracking-widest font-black">Bem-vinda ao seu Estudo 💖</span>
           </div>
-          
-          <h1 className="display text-6xl leading-[0.9] tracking-tighter text-ink">
-            A Arte do <br />
-            <span className="italic text-gold">Olhar</span> <br />
-            Sublime 👑.
+
+          <h1 className="text-[42px] font-black leading-[1] tracking-tight text-ink">
+            O Realce <br />
+            <span className="text-gold">Perfeito</span> para <br />
+            seu Olhar ✨.
           </h1>
-          
-          <p className="text-xs leading-relaxed opacity-50 font-medium max-w-[85%]">
-            Especialistas em extensões de cílios de alto luxo. Transformamos seu olhar com precisão artística e materiais de elite 💅.
+
+          <p className="text-sm leading-relaxed text-ink/40 font-medium max-w-[90%]">
+            Transformando cílios em arte. Venha viver a experiência de um olhar renovado com a técnica que mais combina com você 💅.
           </p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="space-y-8"
+          transition={{ delay: 0.2 }}
+          className="space-y-6"
         >
           <button
             onClick={onStart}
-            className="w-full py-6 bg-ink text-paper rounded-2xl text-[10px] uppercase tracking-[0.4em] font-black transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4"
+            className="w-full py-6 bg-gold text-white rounded-[24px] text-[11px] uppercase tracking-widest font-black transition-all active:scale-95 shadow-[0_20px_40px_rgba(255,51,102,0.3)] flex items-center justify-center gap-4"
           >
-            <span>Agendar Experiência 📅</span>
+            Ver Procedimentos ✨
           </button>
-          
-          <div className="flex items-center justify-between p-6 glass rounded-3xl border border-ink/5">
+
+          <div className="p-6 bg-olive rounded-3xl border border-gold/5 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex -space-x-3">
-                {[1, 2, 3].map(i => (
-                  <img 
-                    key={i}
-                    src={`https://i.pravatar.cc/100?img=${i + 15}`}
-                    className="w-10 h-10 rounded-full border-2 border-paper"
-                    alt="Client"
-                  />
-                ))}
+              <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shadow-sm">
+                🏆
               </div>
-              <div className="space-y-0.5">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gold">Fidelidade 🤝</p>
-                <p className="text-[9px] opacity-40 uppercase tracking-widest">+500 Clientes Felizes 😊</p>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gold">Especialistas 💡</p>
+                <p className="text-[9px] opacity-40 font-bold">Inovação e Técnica</p>
               </div>
             </div>
-            <div className="text-2xl">✨</div>
+            <span className="text-gold">→</span>
           </div>
         </motion.div>
-      </div>
-
-      {/* Decorative Background Text */}
-      <div className="absolute -bottom-10 -right-10 text-[35vw] font-black text-ink/5 select-none pointer-events-none display italic">
-        Lash
       </div>
     </div>
   );
@@ -309,22 +271,20 @@ function CatalogView({ services, loading, onSelect }: { services: Service[]; loa
     <div className="px-6 py-12 space-y-12 pb-32">
       <div className="space-y-4 text-center">
         <div className="flex items-center justify-center gap-3 text-gold">
-          <div className="h-px w-6 bg-gold" />
-          <span className="text-[9px] uppercase tracking-[0.4em] font-black">Menu de Serviços ✨</span>
-          <div className="h-px w-6 bg-gold" />
+          <span className="text-[10px] uppercase tracking-[0.2em] font-black">Nosso Menu 💖</span>
         </div>
-        <h2 className="serif text-5xl">Nosso <span className="italic text-gold">Catálogo</span> 👑</h2>
-        <p className="text-xs opacity-50 max-w-[280px] mx-auto leading-relaxed">
-          Escolha a técnica perfeita para realçar sua beleza natural com exclusividade 💅.
+        <h2 className="text-4xl font-black tracking-tight">Serviços <span className="text-gold">Premium</span></h2>
+        <p className="text-xs opacity-40 max-w-[280px] mx-auto leading-relaxed font-medium">
+          Técnicas exclusivas para realçar sua beleza natural com o máximo de conforto 💅.
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-10">
         {services.sort((a, b) => (a.order || 0) - (b.order || 0)).map((service) => (
-          <ServiceCard 
-            key={service.id} 
-            service={service} 
-            onSelect={onSelect} 
+          <ServiceCard
+            key={service.id}
+            service={service}
+            onSelect={onSelect}
             onShowDetail={() => setSelectedDetail(service)}
           />
         ))}
@@ -332,9 +292,9 @@ function CatalogView({ services, loading, onSelect }: { services: Service[]; loa
 
       <AnimatePresence>
         {selectedDetail && (
-          <ServiceDetailModal 
-            service={selectedDetail} 
-            onClose={() => setSelectedDetail(null)} 
+          <ServiceDetailModal
+            service={selectedDetail}
+            onClose={() => setSelectedDetail(null)}
             onBook={() => {
               onSelect(selectedDetail);
               setSelectedDetail(null);
@@ -348,7 +308,7 @@ function CatalogView({ services, loading, onSelect }: { services: Service[]; loa
 
 function ServiceDetailModal({ service, onClose, onBook }: { service: Service; onClose: () => void; onBook: () => void }) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -357,14 +317,14 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
       <div className="min-h-screen flex flex-col bg-paper">
         {/* Header Image */}
         <div className="relative h-[45vh] w-full shrink-0">
-          <img 
-            src={service.images[0]} 
-            className="w-full h-full object-cover" 
+          <img
+            src={service.images[0]}
+            className="w-full h-full object-cover"
             alt={service.name}
             referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-transparent" />
-          <button 
+          <button
             onClick={onClose}
             className="absolute top-8 right-8 w-12 h-12 rounded-full glass flex items-center justify-center text-xl border border-white/20"
           >
@@ -385,9 +345,9 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
                 <p className="text-[9px] opacity-40 uppercase tracking-widest">{service.duration}</p>
               </div>
             </div>
-            
+
             <div className="h-px w-full bg-ink/5" />
-            
+
             <p className="text-sm leading-relaxed opacity-60 font-medium">
               {service.description}
             </p>
@@ -415,13 +375,13 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
 
           {/* Action Buttons */}
           <div className="sticky bottom-8 left-0 right-0 flex gap-4 pt-4">
-            <button 
+            <button
               onClick={onBook}
               className="flex-[2] py-6 bg-ink text-paper rounded-2xl text-[10px] uppercase tracking-[0.4em] font-black shadow-2xl active:scale-95 transition-all"
             >
               Agendar Agora 📅
             </button>
-            <button 
+            <button
               onClick={onClose}
               className="flex-1 py-6 border border-ink/10 rounded-2xl text-[10px] uppercase tracking-[0.4em] font-black active:bg-ink/5 transition-all"
             >
@@ -461,7 +421,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
             .select('*', { count: 'exact', head: true })
             .or(`clientWhatsapp.eq.${normalized},clientPhone.eq.${normalized}`)
             .eq('status', 'Concluído');
-          
+
           if (error) throw error;
           setFidelityCount(count || 0);
         } catch (error) {
@@ -482,14 +442,14 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
   useEffect(() => {
     if (!formData.date) return;
     setLoadingSlots(true);
-    
+
     const fetchAvailability = async () => {
       const { data, error } = await supabase
         .from('availability')
         .select('booked_times')
         .eq('date', formData.date)
         .single();
-      
+
       if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
         console.error('Error fetching availability:', error);
       } else {
@@ -535,11 +495,11 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         created_at: new Date().toISOString(),
         fcmToken: localStorage.getItem('fcm_token') || null
       };
-      
+
       const { error: bookingError } = await supabase
         .from('bookings')
         .insert([bookingData]);
-      
+
       if (bookingError) throw bookingError;
 
       // 2. Update availability
@@ -548,7 +508,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         .select('booked_times')
         .eq('date', formData.date)
         .single();
-      
+
       if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
 
       const currentBooked = availData?.booked_times || [];
@@ -556,11 +516,11 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
 
       const { error: availError } = await supabase
         .from('availability')
-        .upsert({ 
-          date: formData.date, 
-          booked_times: updatedBooked 
+        .upsert({
+          date: formData.date,
+          booked_times: updatedBooked
         }, { onConflict: 'date' });
-      
+
       if (availError) throw availError;
 
       setIsSubmitted(true);
@@ -575,7 +535,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
   if (isSubmitted) {
     return (
       <div className="max-w-2xl mx-auto py-32 text-center space-y-12">
-        <motion.div 
+        <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           className="w-32 h-32 bg-gold/20 rounded-full flex items-center justify-center text-6xl mx-auto"
@@ -586,7 +546,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
           <h2 className="serif text-6xl">Solicitação Enviada</h2>
           <p className="opacity-50 text-lg">Entraremos em contato via WhatsApp para confirmar seu horário.</p>
         </div>
-        <button 
+        <button
           onClick={onBack}
           className="px-12 py-6 bg-ink text-paper rounded-full text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-gold transition-all"
         >
@@ -608,18 +568,18 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         )}
       </header>
 
-      <motion.form 
+      <motion.form
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        onSubmit={handleSubmit} 
+        onSubmit={handleSubmit}
         className="glass p-12 md:p-20 rounded-[50px] space-y-12 shadow-3xl relative overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-30" />
-        
+
         {/* Fidelity Progress */}
         <AnimatePresence>
           {formData.clientWhatsapp.length >= 8 && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -632,8 +592,8 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
                     {checkingFidelity && <span className="w-2 h-2 bg-gold rounded-full animate-ping" />}
                   </div>
                   <h4 className="serif text-2xl">
-                    {fidelityCount > 0 && fidelityCount % 10 === 0 
-                      ? "🎉 Você ganhou uma sessão de sobrancelha!" 
+                    {fidelityCount > 0 && fidelityCount % 10 === 0
+                      ? "🎉 Você ganhou uma sessão de sobrancelha!"
                       : `${10 - (fidelityCount % 10)} sessões para seu presente`}
                   </h4>
                 </div>
@@ -642,7 +602,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
                 </p>
               </div>
               <div className="h-2 bg-ink/5 rounded-full overflow-hidden">
-                <motion.div 
+                <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${(fidelityCount > 0 && fidelityCount % 10 === 0 ? 10 : fidelityCount % 10) * 10}%` }}
                   className="h-full bg-gold"
@@ -656,24 +616,24 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div className="space-y-4">
             <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">Nome Completo</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               required
               placeholder="Como podemos te chamar?"
               className="w-full bg-transparent border-b border-ink/10 py-6 focus:border-gold outline-none transition-colors serif text-3xl placeholder:opacity-20"
               value={formData.clientName}
-              onChange={e => setFormData({...formData, clientName: e.target.value})}
+              onChange={e => setFormData({ ...formData, clientName: e.target.value })}
             />
           </div>
           <div className="space-y-4">
             <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">WhatsApp</label>
-            <input 
-              type="tel" 
+            <input
+              type="tel"
               required
               placeholder="(00) 00000-0000"
               className="w-full bg-transparent border-b border-ink/10 py-6 focus:border-gold outline-none transition-colors serif text-3xl placeholder:opacity-20"
               value={formData.clientWhatsapp}
-              onChange={e => setFormData({...formData, clientWhatsapp: e.target.value})}
+              onChange={e => setFormData({ ...formData, clientWhatsapp: e.target.value })}
             />
           </div>
         </div>
@@ -681,13 +641,13 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div className="space-y-4">
             <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">Data Desejada</label>
-            <input 
-              type="date" 
+            <input
+              type="date"
               required
               min={new Date().toISOString().split('T')[0]}
               className="w-full bg-transparent border-b border-ink/10 py-6 focus:border-gold outline-none transition-colors serif text-3xl appearance-none"
               value={formData.date}
-              onChange={e => setFormData({...formData, date: e.target.value, time: ''})}
+              onChange={e => setFormData({ ...formData, date: e.target.value, time: '' })}
             />
           </div>
           <div className="space-y-6">
@@ -706,11 +666,11 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
                       key={slot}
                       type="button"
                       disabled={isBooked}
-                      onClick={() => setFormData({...formData, time: slot})}
+                      onClick={() => setFormData({ ...formData, time: slot })}
                       className={cn(
                         "relative py-6 rounded-2xl text-sm font-bold transition-all duration-500 border overflow-hidden",
-                        isBooked 
-                          ? "opacity-20 border-ink/5 cursor-not-allowed bg-ink/5" 
+                        isBooked
+                          ? "opacity-20 border-ink/5 cursor-not-allowed bg-ink/5"
                           : isSelected
                             ? "bg-gold border-gold text-ink shadow-[0_10px_20px_rgba(197,160,89,0.3)]"
                             : "border-ink/10 hover:border-gold/50"
@@ -728,7 +688,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
           </div>
         </div>
 
-        <button 
+        <button
           type="submit"
           className="w-full py-8 bg-ink text-paper font-bold text-[12px] uppercase tracking-[0.5em] hover:bg-gold hover:text-ink transition-all duration-700 rounded-full shadow-2xl"
         >
@@ -740,14 +700,14 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
       <AnimatePresence>
         {showConfirmation && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => !isSaving && setShowConfirmation(false)}
               className="absolute inset-0 bg-ink/90 backdrop-blur-xl"
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -781,7 +741,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
               </div>
 
               <div className="flex flex-col gap-4">
-                <button 
+                <button
                   onClick={saveBooking}
                   disabled={isSaving}
                   className="w-full py-6 bg-ink text-paper rounded-full text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-gold transition-all disabled:opacity-50 flex items-center justify-center gap-3"
@@ -795,7 +755,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
                     "Confirmar Agendamento"
                   )}
                 </button>
-                <button 
+                <button
                   onClick={() => setShowConfirmation(false)}
                   disabled={isSaving}
                   className="w-full py-6 border border-ink/10 rounded-full text-[10px] uppercase tracking-[0.4em] hover:bg-ink/5 transition-colors disabled:opacity-50"
@@ -828,7 +788,7 @@ function FidelityView() {
         .select('*', { count: 'exact', head: true })
         .or(`clientWhatsapp.eq.${normalized},clientPhone.eq.${normalized}`)
         .eq('status', 'Concluído');
-      
+
       if (error) throw error;
       setFidelityCount(count || 0);
     } catch (error) {
@@ -849,8 +809,8 @@ function FidelityView() {
       <form onSubmit={checkFidelity} className="space-y-8">
         <div className="space-y-4">
           <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block text-center">Digite seu WhatsApp</label>
-          <input 
-            type="tel" 
+          <input
+            type="tel"
             required
             placeholder="(00) 00000-0000"
             className="w-full bg-transparent border-b border-ink/10 py-8 focus:border-gold outline-none transition-colors serif text-5xl text-center placeholder:opacity-20"
@@ -858,7 +818,7 @@ function FidelityView() {
             onChange={e => setWhatsapp(e.target.value)}
           />
         </div>
-        <button 
+        <button
           type="submit"
           disabled={loading}
           className="w-full py-8 bg-ink text-paper rounded-full text-[10px] uppercase tracking-[0.5em] font-bold hover:bg-gold hover:text-ink transition-all duration-700 shadow-2xl disabled:opacity-50"
@@ -869,7 +829,7 @@ function FidelityView() {
 
       <AnimatePresence>
         {fidelityCount !== null && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             className="relative"
@@ -877,7 +837,7 @@ function FidelityView() {
             {/* Luxury Card Aesthetic */}
             <div className="aspect-[1.6/1] w-full glass-dark rounded-[40px] p-12 flex flex-col justify-between border border-white/20 shadow-3xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] -translate-y-1/2 translate-x-1/2" />
-              
+
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-2">
                   <h3 className="serif text-4xl text-white">Lash Studio <span className="italic text-gold">Pro</span></h3>
@@ -898,12 +858,12 @@ function FidelityView() {
                     <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2">Próximo Nível</p>
                     <div className="flex gap-1">
                       {[...Array(10)].map((_, i) => (
-                        <div 
-                          key={i} 
+                        <div
+                          key={i}
                           className={cn(
                             "w-4 h-1 rounded-full transition-all duration-500",
                             i < (fidelityCount % 10) ? "bg-gold" : "bg-white/10"
-                          )} 
+                          )}
                         />
                       ))}
                     </div>
@@ -921,7 +881,7 @@ function FidelityView() {
 
             {/* Reward Message */}
             {fidelityCount >= 10 && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="mt-12 p-10 glass rounded-[40px] border border-gold/30 text-center space-y-4"
@@ -929,7 +889,7 @@ function FidelityView() {
                 <span className="text-5xl block">🎉</span>
                 <h4 className="serif text-4xl">Parabéns!</h4>
                 <p className="text-sm opacity-60">Você completou seu ciclo de fidelidade. <br /> Sua próxima sessão de sobrancelha é por nossa conta!</p>
-                <button 
+                <button
                   onClick={() => window.open(`https://wa.me/5511999999999?text=Olá! Completei meu cartão fidelidade e gostaria de resgatar meu prêmio.`, '_blank')}
                   className="mt-4 px-12 py-6 bg-gold text-ink rounded-full text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-ink hover:text-paper transition-all"
                 >
@@ -955,13 +915,13 @@ function AdminView({ services }: { services: Service[] }) {
 
   useEffect(() => {
     if (!user) return;
-    
+
     const fetchBookings = async () => {
       const { data, error } = await supabase
         .from('bookings')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) {
         console.error('Error fetching bookings:', error);
       } else {
@@ -974,7 +934,7 @@ function AdminView({ services }: { services: Service[] }) {
         .from('expenses')
         .select('*')
         .order('date', { ascending: false });
-      
+
       if (error) {
         console.error('Error fetching expenses:', error);
       } else {
@@ -1015,7 +975,7 @@ function AdminView({ services }: { services: Service[] }) {
           <h2 className="serif text-6xl">Acesso Restrito</h2>
           <p className="opacity-50 text-sm">Área exclusiva para gestão do estúdio.</p>
         </div>
-        <button 
+        <button
           onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
           className="w-full py-6 bg-ink text-paper flex items-center justify-center gap-4 hover:bg-gold transition-all duration-700 rounded-full shadow-2xl"
         >
@@ -1037,9 +997,9 @@ function AdminView({ services }: { services: Service[] }) {
           <h2 className="serif text-5xl md:text-7xl">Painel de <span className="italic text-gold">Gestão</span></h2>
           <p className="text-[10px] uppercase tracking-[0.4em] opacity-40">Bem-vinda de volta, {user.displayName}</p>
         </div>
-        
+
         <div className="flex gap-4 bg-ink/5 p-2 rounded-full backdrop-blur-md">
-          <button 
+          <button
             onClick={() => setActiveTab('agenda')}
             className={cn(
               "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
@@ -1048,7 +1008,7 @@ function AdminView({ services }: { services: Service[] }) {
           >
             Agenda
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('clientes')}
             className={cn(
               "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
@@ -1057,7 +1017,7 @@ function AdminView({ services }: { services: Service[] }) {
           >
             Clientes
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('despesas')}
             className={cn(
               "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
@@ -1066,7 +1026,7 @@ function AdminView({ services }: { services: Service[] }) {
           >
             Despesas
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('servicos')}
             className={cn(
               "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
@@ -1087,7 +1047,7 @@ function AdminView({ services }: { services: Service[] }) {
 
       <AnimatePresence mode="wait">
         {activeTab === 'agenda' ? (
-          <motion.div 
+          <motion.div
             key="agenda"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -1107,7 +1067,7 @@ function AdminView({ services }: { services: Service[] }) {
             </div>
           </motion.div>
         ) : activeTab === 'clientes' ? (
-          <motion.div 
+          <motion.div
             key="clientes"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1117,7 +1077,7 @@ function AdminView({ services }: { services: Service[] }) {
             <ClientsTab bookings={bookings} />
           </motion.div>
         ) : activeTab === 'servicos' ? (
-          <motion.div 
+          <motion.div
             key="servicos"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1126,20 +1086,20 @@ function AdminView({ services }: { services: Service[] }) {
           >
             <div className="flex justify-between items-center">
               <h3 className="serif text-4xl">Gestão do Catálogo</h3>
-              <button 
+              <button
                 onClick={() => { setEditingService(null); setShowServiceModal(true); }}
                 className="px-8 py-3 bg-gold text-ink rounded-full text-[10px] uppercase tracking-[0.2em] font-bold shadow-lg hover:scale-105 transition-transform"
               >
                 ➕ Adicionar Item
               </button>
             </div>
-            <ServicesTab 
-              services={services} 
-              onEdit={(s) => { setEditingService(s); setShowServiceModal(true); }} 
+            <ServicesTab
+              services={services}
+              onEdit={(s) => { setEditingService(s); setShowServiceModal(true); }}
             />
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             key="despesas"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -1148,7 +1108,7 @@ function AdminView({ services }: { services: Service[] }) {
           >
             <div className="flex justify-between items-center">
               <h3 className="serif text-4xl">Fluxo de Caixa</h3>
-              <button 
+              <button
                 onClick={() => setShowExpenseModal(true)}
                 className="px-8 py-3 bg-gold text-ink rounded-full text-[10px] uppercase tracking-[0.2em] font-bold shadow-lg hover:scale-105 transition-transform"
               >
@@ -1168,9 +1128,9 @@ function AdminView({ services }: { services: Service[] }) {
 
       {showExpenseModal && <ExpenseModal onClose={() => setShowExpenseModal(false)} />}
       {showServiceModal && (
-        <ServiceModal 
-          service={editingService} 
-          onClose={() => { setShowServiceModal(false); setEditingService(null); }} 
+        <ServiceModal
+          service={editingService}
+          onClose={() => { setShowServiceModal(false); setEditingService(null); }}
         />
       )}
     </div>
@@ -1185,7 +1145,7 @@ function ServicesTab({ services, onEdit }: { services: Service[]; onEdit: (s: Se
         .from('services')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
     } catch (error) {
       console.error('Error deleting service:', error);
@@ -1200,8 +1160,8 @@ function ServicesTab({ services, onEdit }: { services: Service[]; onEdit: (s: Se
         </div>
       ) : (
         services.sort((a, b) => (a.order || 0) - (b.order || 0)).map((service) => (
-          <motion.div 
-            key={service.id} 
+          <motion.div
+            key={service.id}
             layout
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1209,9 +1169,9 @@ function ServicesTab({ services, onEdit }: { services: Service[]; onEdit: (s: Se
           >
             <div className="flex gap-5">
               <div className="relative shrink-0">
-                <img 
-                  src={service.images[0]} 
-                  className="w-24 h-24 rounded-2xl object-cover shadow-xl" 
+                <img
+                  src={service.images[0]}
+                  className="w-24 h-24 rounded-2xl object-cover shadow-xl"
                   alt={service.name}
                   referrerPolicy="no-referrer"
                 />
@@ -1232,13 +1192,13 @@ function ServicesTab({ services, onEdit }: { services: Service[]; onEdit: (s: Se
               </div>
             </div>
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => onEdit(service)}
                 className="flex-1 py-4 bg-ink text-paper rounded-xl text-[9px] uppercase tracking-widest font-black active:scale-95 transition-all"
               >
                 Editar ✏️
               </button>
-              <button 
+              <button
                 onClick={() => handleDelete(service.id)}
                 className="px-6 py-4 border border-red-100 text-red-600 rounded-xl text-[9px] uppercase tracking-widest font-black active:bg-red-50 transition-all"
               >
@@ -1299,7 +1259,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
 
   return (
     <div className="fixed inset-0 bg-ink z-[100] overflow-y-auto">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         className="min-h-screen flex flex-col bg-paper"
@@ -1344,27 +1304,27 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
             <div className="space-y-6">
               <div className="space-y-2">
                 <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Nome do Item</label>
-                <input 
+                <input
                   type="text" required placeholder="Ex: Volume Russo"
-                  value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
+                  value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
                 />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Preço (R$)</label>
-                  <input 
+                  <input
                     type="number" required placeholder="0,00"
-                    value={formData.price} onChange={e => setFormData({...formData, price: Number(e.target.value)})}
+                    value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })}
                     className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Duração</label>
-                  <input 
+                  <input
                     type="text" required placeholder="Ex: 2h"
-                    value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})}
+                    value={formData.duration} onChange={e => setFormData({ ...formData, duration: e.target.value })}
                     className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
                   />
                 </div>
@@ -1372,36 +1332,36 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
 
               <div className="space-y-2">
                 <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Ordem</label>
-                <input 
+                <input
                   type="number" placeholder="0"
-                  value={formData.order} onChange={e => setFormData({...formData, order: Number(e.target.value)})}
+                  value={formData.order} onChange={e => setFormData({ ...formData, order: Number(e.target.value) })}
                   className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Descrição</label>
-                <textarea 
+                <textarea
                   required rows={4} placeholder="Detalhes do serviço..."
-                  value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}
+                  value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}
                   className="w-full bg-ink/5 border-none rounded-2xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none resize-none"
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">URLs das Imagens (vírgula)</label>
-                <textarea 
+                <textarea
                   required rows={3} placeholder="https://..."
-                  value={formData.images} onChange={e => setFormData({...formData, images: e.target.value})}
+                  value={formData.images} onChange={e => setFormData({ ...formData, images: e.target.value })}
                   className="w-full bg-ink/5 border-none rounded-2xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none resize-none"
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">URL do Vídeo</label>
-                <input 
+                <input
                   type="text" placeholder="Opcional"
-                  value={formData.video} onChange={e => setFormData({...formData, video: e.target.value})}
+                  value={formData.video} onChange={e => setFormData({ ...formData, video: e.target.value })}
                   className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
                 />
               </div>
@@ -1409,13 +1369,13 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
 
             {/* Sticky Actions */}
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-paper/80 backdrop-blur-md border-t border-ink/5 flex gap-4 z-50">
-              <button 
+              <button
                 type="button" onClick={onClose}
                 className="flex-1 py-5 border border-ink/10 rounded-xl text-[9px] uppercase tracking-widest font-black active:bg-ink/5"
               >
                 Cancelar
               </button>
-              <button 
+              <button
                 type="submit" disabled={isSaving}
                 className="flex-[2] py-5 bg-gold text-ink rounded-xl text-[9px] uppercase tracking-widest font-black shadow-xl active:scale-95 disabled:opacity-50"
               >
@@ -1437,7 +1397,7 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
   const clientsMap = bookings.reduce((acc: any, booking: any) => {
     const phone = normalizePhone(booking.clientWhatsapp || booking.clientPhone);
     if (!phone) return acc;
-    
+
     if (!acc[phone]) {
       acc[phone] = {
         name: booking.clientName,
@@ -1452,7 +1412,7 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
     return acc;
   }, {});
 
-  const clientsList = Object.values(clientsMap).filter((client: any) => 
+  const clientsList = Object.values(clientsMap).filter((client: any) =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.phone.includes(searchTerm)
   );
@@ -1465,7 +1425,7 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
           <p className="text-[10px] uppercase tracking-[0.3em] opacity-40">Base de dados e histórico de fidelidade</p>
         </div>
         <div className="relative w-full md:w-96">
-          <input 
+          <input
             type="text"
             placeholder="Buscar por nome ou WhatsApp..."
             value={searchTerm}
@@ -1481,12 +1441,12 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
           <div className="py-32 text-center glass rounded-[40px] border border-dashed border-ink/10 opacity-40 italic">Nenhum cliente encontrado.</div>
         ) : (
           clientsList.map((client: any) => (
-            <div 
+            <div
               key={client.phone}
               className="glass p-8 md:p-10 rounded-[40px] border border-ink/5 hover:border-gold/30 transition-all duration-500 group relative overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-1 h-full bg-gold/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-              
+
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                 <div className="flex items-center gap-8">
                   <div className="w-20 h-20 bg-ink text-paper rounded-full flex items-center justify-center text-3xl serif shadow-xl">
@@ -1507,15 +1467,15 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
                     <p className="text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1">Status</p>
                     <p className={cn(
                       "text-[9px] font-bold uppercase tracking-widest px-4 py-1 rounded-full",
-                      client.bookings.filter((b: any) => b.status === 'Concluído').length >= 5 
-                        ? "bg-gold/10 text-gold" 
+                      client.bookings.filter((b: any) => b.status === 'Concluído').length >= 5
+                        ? "bg-gold/10 text-gold"
                         : "bg-olive/10 text-olive"
                     )}>
                       {client.bookings.filter((b: any) => b.status === 'Concluído').length >= 5 ? '💎 Fiel' : '✨ Novo'}
                     </p>
                   </div>
                   <div className="flex gap-3">
-                    <a 
+                    <a
                       href={`https://wa.me/55${client.phone}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1524,7 +1484,7 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
                     >
                       📱
                     </a>
-                    <button 
+                    <button
                       onClick={() => setSelectedClient(selectedClient === client.phone ? null : client.phone)}
                       className="px-8 py-3 border border-ink/10 rounded-full text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-ink hover:text-paper transition-all shadow-sm"
                     >
@@ -1536,7 +1496,7 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
 
               <AnimatePresence>
                 {selectedClient === client.phone && (
-                  <motion.div 
+                  <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -1555,8 +1515,8 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
                             <span className={cn(
                               "text-[9px] uppercase tracking-widest font-bold px-4 py-1 rounded-full",
                               b.status === 'Concluído' ? "bg-olive/10 text-olive" :
-                              b.status === 'Cancelado' ? "bg-red-100 text-red-800" :
-                              "bg-gold/10 text-gold"
+                                b.status === 'Cancelado' ? "bg-red-100 text-red-800" :
+                                  "bg-gold/10 text-gold"
                             )}>
                               {b.status}
                             </span>
@@ -1577,7 +1537,7 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
 
 function StatCard({ title, value, color, highlight }: { title: string, value: string, color: string, highlight?: boolean }) {
   return (
-    <motion.div 
+    <motion.div
       whileHover={{ y: -10, rotateX: 5 }}
       className={cn(
         "bento-card p-10 flex flex-col justify-between min-h-[200px] transition-all duration-500",
@@ -1606,12 +1566,12 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
     try {
       const { error: updateError } = await supabase
         .from('bookings')
-        .update({ 
+        .update({
           status: newStatus,
           clientWhatsapp: normalizePhone(booking.clientWhatsapp || booking.clientPhone)
         })
         .eq('id', booking.id);
-      
+
       if (updateError) throw updateError;
 
       if (newStatus === 'Cancelado') {
@@ -1620,7 +1580,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
           .select('booked_times')
           .eq('date', booking.date)
           .single();
-        
+
         if (!fetchError && availData) {
           const updatedBooked = (availData.booked_times || []).filter((t: string) => t !== booking.time);
           await supabase
@@ -1634,15 +1594,15 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
           .select('booked_times')
           .eq('date', booking.date)
           .single();
-        
+
         const currentBooked = availData?.booked_times || [];
         const updatedBooked = [...new Set([...currentBooked, booking.time])];
-        
+
         await supabase
           .from('availability')
-          .upsert({ 
-            date: booking.date, 
-            booked_times: updatedBooked 
+          .upsert({
+            date: booking.date,
+            booked_times: updatedBooked
           }, { onConflict: 'date' });
       }
 
@@ -1686,7 +1646,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
         .from('bookings')
         .delete()
         .eq('id', booking.id);
-      
+
       if (deleteError) throw deleteError;
 
       const { data: availData, error: fetchError } = await supabase
@@ -1694,7 +1654,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
         .select('booked_times')
         .eq('date', booking.date)
         .single();
-      
+
       if (!fetchError && availData) {
         const updatedBooked = (availData.booked_times || []).filter((t: string) => t !== booking.time);
         await supabase
@@ -1717,7 +1677,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
   return (
     <div className="glass p-8 rounded-[30px] flex flex-col md:flex-row justify-between items-center gap-8 group hover:border-gold/30 transition-all duration-500 hover:shadow-2xl relative overflow-hidden">
       <div className="absolute top-0 left-0 w-1 h-full bg-gold/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-      
+
       <div className="flex items-center gap-8">
         <div className="w-16 h-16 bg-ink text-paper rounded-full flex items-center justify-center text-xl serif">
           {booking.clientName.charAt(0)}
@@ -1735,7 +1695,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
           <p className="text-xs opacity-50 tracking-widest">{booking.clientPhone || booking.clientWhatsapp}</p>
         </div>
       </div>
-      
+
       <div className="flex flex-wrap justify-center gap-12 items-center">
         <div className="text-center">
           <p className="text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1">Serviço</p>
@@ -1755,7 +1715,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
 
       <div className="flex gap-3">
         {['Confirmado', 'Concluído', 'Cancelado'].map(s => (
-          <button 
+          <button
             key={s}
             onClick={() => updateStatus(s)}
             className="w-12 h-12 rounded-full border border-ink/10 flex items-center justify-center hover:bg-ink hover:text-paper transition-all text-lg shadow-sm hover:shadow-md"
@@ -1764,7 +1724,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
             {s === 'Confirmado' ? '✅' : s === 'Concluído' ? '💰' : '❌'}
           </button>
         ))}
-        <button 
+        <button
           onClick={deleteBooking}
           className="w-12 h-12 rounded-full border border-red-800/10 flex items-center justify-center hover:bg-red-800 hover:text-paper transition-all text-lg shadow-sm hover:shadow-md"
           title="Excluir"
@@ -1812,7 +1772,7 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
           value: Number(formData.value),
           created_at: new Date().toISOString()
         }]);
-      
+
       if (error) throw error;
       onClose();
     } catch (error) {
@@ -1822,69 +1782,69 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
         className="absolute inset-0 bg-ink/80 backdrop-blur-xl"
       />
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         className="relative w-full max-w-lg bg-paper p-12 md:p-16 rounded-[50px] shadow-3xl space-y-12 overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-30" />
-        
+
         <div className="text-center space-y-4">
           <h3 className="display text-5xl">Nova <span className="italic text-gold">Despesa</span></h3>
           <p className="text-[10px] uppercase tracking-[0.3em] opacity-40">Registre um novo gasto no fluxo</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-10">
           <div className="space-y-4">
             <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">Descrição</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               required
               placeholder="Ex: Aluguel, Materiais..."
               className="w-full bg-transparent border-b border-ink/10 py-4 focus:border-gold outline-none transition-colors serif text-2xl placeholder:opacity-20"
               value={formData.description}
-              onChange={e => setFormData({...formData, description: e.target.value})}
+              onChange={e => setFormData({ ...formData, description: e.target.value })}
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-10">
             <div className="space-y-4">
               <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">Valor (R$)</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 required
                 placeholder="0,00"
                 className="w-full bg-transparent border-b border-ink/10 py-4 focus:border-gold outline-none transition-colors serif text-2xl placeholder:opacity-20"
                 value={formData.value}
-                onChange={e => setFormData({...formData, value: e.target.value})}
+                onChange={e => setFormData({ ...formData, value: e.target.value })}
               />
             </div>
             <div className="space-y-4">
               <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">Data</label>
-              <input 
-                type="date" 
+              <input
+                type="date"
                 required
                 className="w-full bg-transparent border-b border-ink/10 py-4 focus:border-gold outline-none transition-colors serif text-2xl"
                 value={formData.date}
-                onChange={e => setFormData({...formData, date: e.target.value})}
+                onChange={e => setFormData({ ...formData, date: e.target.value })}
               />
             </div>
           </div>
 
           <div className="space-y-4">
             <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">Categoria</label>
-            <select 
+            <select
               className="w-full bg-transparent border-b border-ink/10 py-4 focus:border-gold outline-none transition-colors serif text-2xl appearance-none"
               value={formData.category}
-              onChange={e => setFormData({...formData, category: e.target.value})}
+              onChange={e => setFormData({ ...formData, category: e.target.value })}
             >
               <option value="Material">Material</option>
               <option value="Aluguel">Aluguel</option>
@@ -1894,14 +1854,14 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="flex gap-4 pt-8">
-            <button 
+            <button
               type="button"
               onClick={onClose}
               className="flex-1 py-6 border border-ink/10 rounded-full text-[10px] uppercase tracking-[0.3em] hover:bg-ink/5 transition-colors"
             >
               Cancelar
             </button>
-            <button 
+            <button
               type="submit"
               className="flex-1 py-8 bg-ink text-paper rounded-full text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-gold hover:text-ink transition-all shadow-xl"
             >
@@ -1927,7 +1887,7 @@ function App() {
         .from('services')
         .select('*')
         .order('order', { ascending: true });
-      
+
       if (error) {
         console.error('Error fetching services:', error);
       } else {
@@ -1961,8 +1921,8 @@ function App() {
       <div className="min-h-screen bg-paper text-ink font-sans selection:bg-gold selection:text-ink overflow-x-hidden">
         {/* Atmospheric Background */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <motion.div 
-            animate={{ 
+          <motion.div
+            animate={{
               scale: [1, 1.2, 1],
               rotate: [0, 90, 0],
               x: [0, 100, 0],
@@ -1971,8 +1931,8 @@ function App() {
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             className="absolute -top-1/2 -left-1/2 w-full h-full bg-gold/5 blur-[120px] rounded-full"
           />
-          <motion.div 
-            animate={{ 
+          <motion.div
+            animate={{
               scale: [1.2, 1, 1.2],
               rotate: [90, 0, 90],
               x: [0, -100, 0],
@@ -2025,20 +1985,20 @@ function App() {
             <motion.div
               key={i}
               initial={{ opacity: 0 }}
-              animate={{ 
+              animate={{
                 opacity: [0, 0.2, 0],
                 y: [0, -200],
                 x: Math.random() * 100 - 50
               }}
-              transition={{ 
-                duration: 5 + Math.random() * 5, 
-                repeat: Infinity, 
-                delay: Math.random() * 5 
+              transition={{
+                duration: 5 + Math.random() * 5,
+                repeat: Infinity,
+                delay: Math.random() * 5
               }}
               className="absolute text-2xl"
-              style={{ 
-                left: `${Math.random() * 100}%`, 
-                top: `${Math.random() * 100}%` 
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`
               }}
             >
               ✨
