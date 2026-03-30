@@ -1,4 +1,6 @@
 import React, { useState, useEffect, createContext, useContext, useMemo, useRef } from 'react';
+import { format, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, isBefore, startOfToday, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'motion/react';
 import { supabase } from './supabase';
 import { User } from '@supabase/supabase-js';
@@ -393,6 +395,92 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
   );
 }
 
+function CalendarSelector({ selectedDate, onSelect, monthAvailability }: {
+  selectedDate: string;
+  onSelect: (date: string) => void;
+  monthAvailability: Record<string, number>;
+}) {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  const months = [0, 1, 2].map(i => addMonths(new Date(), i));
+
+  const days = useMemo(() => {
+    const start = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 0 });
+    const end = endOfWeek(endOfMonth(currentMonth), { weekStartsOn: 0 });
+    return eachDayOfInterval({ start, end });
+  }, [currentMonth]);
+
+  const weekdays = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB'];
+
+  return (
+    <div className="space-y-8">
+      {/* Month Tabs */}
+      <div className="flex justify-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+        {months.map((m, i) => {
+          const isSelected = isSameMonth(m, currentMonth);
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setCurrentMonth(m)}
+              className={cn(
+                "px-6 py-3 rounded-full text-[10px] uppercase tracking-widest font-black transition-all whitespace-nowrap",
+                isSelected ? "bg-gold text-white shadow-lg" : "bg-ink/5 opacity-40 hover:opacity-100"
+              )}
+            >
+              {format(m, 'MMMM yyyy', { locale: ptBR })}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7 gap-2 md:gap-4">
+        {weekdays.map(w => (
+          <div key={w} className="text-center text-[9px] font-black opacity-30 py-2">{w}</div>
+        ))}
+        {days.map((day, i) => {
+          const dateStr = format(day, 'yyyy-MM-dd');
+          const isSelected = selectedDate === dateStr;
+          const isPast = isBefore(day, startOfToday());
+          const isOtherMonth = !isSameMonth(day, currentMonth);
+          const bookedCount = monthAvailability[dateStr] || 0;
+          const availableCount = TIME_SLOTS.length - bookedCount;
+          const isFull = availableCount <= 0;
+
+          return (
+            <button
+              key={i}
+              type="button"
+              disabled={isPast || isFull || isOtherMonth}
+              onClick={() => onSelect(dateStr)}
+              className={cn(
+                "aspect-square rounded-2xl flex flex-col items-center justify-center gap-1 transition-all border relative",
+                isOtherMonth ? "opacity-0 pointer-events-none" : "",
+                isPast || isFull
+                  ? "bg-ink/5 border-transparent opacity-20 cursor-not-allowed"
+                  : isSelected
+                    ? "bg-gold border-gold text-white shadow-xl scale-105 z-10"
+                    : "bg-white border-ink/5 hover:border-gold/50"
+              )}
+            >
+              <span className="text-sm font-black">{format(day, 'd')}</span>
+              {!isPast && !isFull && (
+                <span className={cn("text-[7px] uppercase font-bold", isSelected ? "text-white/80" : "text-gold")}>
+                  {availableCount} disp.
+                </span>
+              )}
+              {isFull && !isPast && (
+                <span className="text-[7px] uppercase font-bold opacity-30">indisp.</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function BookingView({ selectedService, onBack }: { selectedService: Service | null; onBack: () => void }) {
   const [formData, setFormData] = useState({
     clientName: '',
@@ -407,6 +495,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
   const [checkingFidelity, setCheckingFidelity] = useState(false);
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [monthAvailability, setMonthAvailability] = useState<Record<string, number>>({});
 
   // Check fidelity when WhatsApp number is entered
   useEffect(() => {
@@ -437,7 +526,33 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
     return () => clearTimeout(timer);
   }, [formData.clientWhatsapp]);
 
-  // Fetch booked slots for the selected date (Real-time from availability collection)
+  // Fetch availability for the next 3 months
+  useEffect(() => {
+    const fetchMonthAvailability = async () => {
+      const start = format(startOfToday(), 'yyyy-MM-dd');
+      const end = format(addMonths(new Date(), 3), 'yyyy-MM-dd');
+
+      const { data, error } = await supabase
+        .from('availability')
+        .select('date, booked_times')
+        .gte('date', start)
+        .lte('date', end);
+
+      if (error) {
+        console.error('Error fetching month availability:', error);
+      } else {
+        const availabilityMap: Record<string, number> = {};
+        data?.forEach(row => {
+          availabilityMap[row.date] = row.booked_times?.length || 0;
+        });
+        setMonthAvailability(availabilityMap);
+      }
+    };
+
+    fetchMonthAvailability();
+  }, []);
+
+  // Fetch booked slots for the selected date
   useEffect(() => {
     if (!formData.date) return;
     setLoadingSlots(true);
@@ -449,7 +564,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         .eq('date', formData.date)
         .single();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+      if (error && error.code !== 'PGRST116') {
         console.error('Error fetching availability:', error);
       } else {
         setBookedTimes(data?.booked_times || []);
@@ -458,24 +573,12 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
     };
 
     fetchAvailability();
-
-    // Subscribe to changes
-    const subscription = supabase
-      .channel('availability-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'availability', filter: `date=eq.${formData.date}` }, () => {
-        fetchAvailability();
-      })
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, [formData.date]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.time) {
-      alert("Por favor, selecione um horário disponível.");
+    if (!formData.date || !formData.time) {
+      alert("Por favor, selecione data e horário.");
       return;
     }
     setShowConfirmation(true);
@@ -484,7 +587,6 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
   const saveBooking = async () => {
     setIsSaving(true);
     try {
-      // 1. Create the booking
       const bookingData = {
         ...formData,
         clientWhatsapp: normalizePhone(formData.clientWhatsapp),
@@ -501,7 +603,6 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
 
       if (bookingError) throw bookingError;
 
-      // 2. Update availability
       const { data: availData, error: fetchError } = await supabase
         .from('availability')
         .select('booked_times')
@@ -542,158 +643,103 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
           ✨
         </motion.div>
         <div className="space-y-6">
-          <h2 className="serif text-6xl">Solicitação Enviada</h2>
-          <p className="opacity-50 text-lg">Entraremos em contato via WhatsApp para confirmar seu horário.</p>
+          <h2 className="text-6xl font-black">Pronto! 💖</h2>
+          <p className="opacity-50 text-lg">Solicitação enviada. Entraremos em contato via WhatsApp para confirmar.</p>
         </div>
         <button
           onClick={onBack}
-          className="px-12 py-6 bg-ink text-paper rounded-full text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-gold transition-all"
+          className="px-12 py-6 bg-gold text-white rounded-full text-[10px] uppercase tracking-[0.4em] font-black shadow-xl active:scale-95 transition-all"
         >
-          Voltar ao Catálogo
+          Voltar ao Início
         </button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-20 pb-32">
-      <header className="text-center space-y-6">
+    <div className="max-w-4xl mx-auto space-y-12 pb-32">
+      <header className="text-center space-y-4">
         <button onClick={onBack} className="text-[10px] uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-opacity">← Voltar</button>
-        <h2 className="display text-6xl md:text-8xl">Agende seu <span className="italic text-gold">Momento</span></h2>
-        {selectedService && (
-          <div className="inline-block px-8 py-3 glass rounded-full border border-gold/20">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-gold font-bold">Serviço: {selectedService.name}</p>
-          </div>
-        )}
+        <h2 className="text-5xl md:text-7xl font-black tracking-tight">Escolha sua <span className="text-gold">Data</span></h2>
       </header>
 
-      <motion.form
+      <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        onSubmit={handleSubmit}
-        className="glass p-12 md:p-20 rounded-[50px] space-y-12 shadow-3xl relative overflow-hidden"
+        className="bg-white p-8 md:p-12 rounded-[40px] space-y-12 shadow-2xl border border-ink/5"
       >
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-30" />
-
-        {/* Fidelity Progress */}
-        <AnimatePresence>
-          {formData.clientWhatsapp.length >= 8 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="bg-gold/5 border border-gold/10 p-8 rounded-3xl space-y-4 overflow-hidden"
-            >
-              <div className="flex justify-between items-end">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold">Cartão Fidelidade 💎</p>
-                    {checkingFidelity && <span className="w-2 h-2 bg-gold rounded-full animate-ping" />}
-                  </div>
-                  <h4 className="serif text-2xl">
-                    {fidelityCount > 0 && fidelityCount % 10 === 0
-                      ? "🎉 Você ganhou uma sessão de sobrancelha!"
-                      : `${10 - (fidelityCount % 10)} sessões para seu presente`}
-                  </h4>
-                </div>
-                <p className="serif text-3xl text-gold">
-                  {fidelityCount > 0 && fidelityCount % 10 === 0 ? 10 : fidelityCount % 10}/10
-                </p>
-              </div>
-              <div className="h-2 bg-ink/5 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(fidelityCount > 0 && fidelityCount % 10 === 0 ? 10 : fidelityCount % 10) * 10}%` }}
-                  className="h-full bg-gold"
-                />
-              </div>
-              <p className="text-[9px] opacity-40 uppercase tracking-widest">A cada 10 sessões concluídas, você ganha um design de sobrancelha grátis.</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Step 1: Contact Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-4">
-            <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">Nome Completo</label>
+            <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-black block">Nome Completo</label>
             <input
-              type="text"
-              required
-              placeholder="Como podemos te chamar?"
-              className="w-full bg-transparent border-b border-ink/10 py-6 focus:border-gold outline-none transition-colors serif text-3xl placeholder:opacity-20"
+              type="text" required placeholder="Seu nome..."
+              className="w-full bg-ink/5 p-6 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all font-bold"
               value={formData.clientName}
               onChange={e => setFormData({ ...formData, clientName: e.target.value })}
             />
           </div>
           <div className="space-y-4">
-            <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">WhatsApp</label>
+            <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-black block">WhatsApp</label>
             <input
-              type="tel"
-              required
-              placeholder="(00) 00000-0000"
-              className="w-full bg-transparent border-b border-ink/10 py-6 focus:border-gold outline-none transition-colors serif text-3xl placeholder:opacity-20"
+              type="tel" required placeholder="(00) 00000-0000"
+              className="w-full bg-ink/5 p-6 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all font-bold"
               value={formData.clientWhatsapp}
               onChange={e => setFormData({ ...formData, clientWhatsapp: e.target.value })}
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div className="space-y-4">
-            <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">Data Desejada</label>
-            <input
-              type="date"
-              required
-              min={new Date().toISOString().split('T')[0]}
-              className="w-full bg-transparent border-b border-ink/10 py-6 focus:border-gold outline-none transition-colors serif text-3xl appearance-none"
-              value={formData.date}
-              onChange={e => setFormData({ ...formData, date: e.target.value, time: '' })}
-            />
-          </div>
-          <div className="space-y-6">
-            <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-bold block">Horários Disponíveis</label>
-            {!formData.date ? (
-              <p className="text-sm opacity-30 italic">Selecione uma data primeiro...</p>
-            ) : loadingSlots ? (
-              <p className="text-sm opacity-30 animate-pulse">Consultando agenda...</p>
+        {/* Step 2: Calendar */}
+        <div className="space-y-6">
+          <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-black block">Selecione o Dia</label>
+          <CalendarSelector
+            selectedDate={formData.date}
+            onSelect={(date) => setFormData({ ...formData, date, time: '' })}
+            monthAvailability={monthAvailability}
+          />
+        </div>
+
+        {/* Step 3: Time Slots */}
+        {formData.date && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-6 pt-8 border-t border-ink/5">
+            <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-black block">Horários no dia {formData.date.split('-').reverse().join('/')}</label>
+            {loadingSlots ? (
+              <div className="py-10 text-center animate-pulse opacity-40">Consultando horários...</div>
             ) : (
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                 {TIME_SLOTS.map(slot => {
                   const isBooked = bookedTimes.includes(slot);
                   const isSelected = formData.time === slot;
                   return (
                     <button
-                      key={slot}
-                      type="button"
-                      disabled={isBooked}
+                      key={slot} type="button" disabled={isBooked}
                       onClick={() => setFormData({ ...formData, time: slot })}
                       className={cn(
-                        "relative py-6 rounded-2xl text-sm font-bold transition-all duration-500 border overflow-hidden",
+                        "py-4 rounded-xl text-xs font-black transition-all border",
                         isBooked
-                          ? "opacity-20 border-ink/5 cursor-not-allowed bg-ink/5"
+                          ? "bg-ink/5 border-transparent opacity-20 cursor-not-allowed"
                           : isSelected
-                            ? "bg-gold border-gold text-ink shadow-[0_10px_20px_rgba(197,160,89,0.3)]"
-                            : "border-ink/10 hover:border-gold/50"
+                            ? "bg-gold border-gold text-white shadow-lg"
+                            : "bg-white border-ink/5 hover:border-gold/50"
                       )}
                     >
-                      <span className={cn(isBooked && "line-through")}>{slot}</span>
-                      {isBooked && (
-                        <span className="absolute inset-0 flex items-center justify-center text-[8px] uppercase tracking-tighter opacity-40 translate-y-3">Indisponível</span>
-                      )}
+                      {slot}
                     </button>
                   );
                 })}
               </div>
             )}
-          </div>
-        </div>
+          </motion.div>
+        )}
 
         <button
-          type="submit"
-          className="w-full py-8 bg-ink text-paper font-bold text-[12px] uppercase tracking-[0.5em] hover:bg-gold hover:text-ink transition-all duration-700 rounded-full shadow-2xl"
+          onClick={handleSubmit}
+          className="w-full py-8 bg-ink text-white font-black text-[12px] uppercase tracking-[0.5em] hover:bg-gold transition-all duration-500 rounded-3xl shadow-2xl mt-8"
         >
-          Confirmar Solicitação ✨
+          Confirmar Agendamento ✨
         </button>
-      </motion.form>
+      </motion.div>
 
       {/* Confirmation Modal */}
       <AnimatePresence>
@@ -1077,7 +1123,7 @@ function AdminView({ services }: { services: Service[] }) {
 
       {/* Stats Grid with 3D feel */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <StatCard title="Faturamento Est." value={`R$ ${estimatedRevenue}`} color="text-olive" />
+        <StatCard title="Faturamento Est." value={`R$ ${estimatedRevenue}`} color="text-gold" />
         <StatCard title="Despesas Totais" value={`R$ ${totalExpenses}`} color="text-red-800" />
         <StatCard title="Saldo Líquido" value={`R$ ${balance}`} color={balance >= 0 ? "text-gold" : "text-red-800"} highlight />
       </div>
