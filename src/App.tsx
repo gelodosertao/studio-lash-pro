@@ -199,7 +199,7 @@ function HomeView({ onStart }: { onStart: () => void }) {
           className="absolute bottom-16 left-8 bg-gold px-5 py-2.5 rounded-full text-white shadow-xl flex items-center gap-3"
         >
           <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-          <span className="text-[10px] uppercase tracking-widest font-black">Agende pelo WhatsApp 💖</span>
+          <span className="text-[10px] uppercase tracking-widest font-black">Agende seu Horário Online ✨</span>
         </motion.div>
       </div>
 
@@ -935,10 +935,10 @@ function FidelityView() {
                 <h4 className="serif text-4xl">Parabéns!</h4>
                 <p className="text-sm opacity-60">Você completou seu ciclo de fidelidade. <br /> Sua próxima sessão de sobrancelha é por nossa conta!</p>
                 <button
-                  onClick={() => window.open(`https://wa.me/5511999999999?text=Olá! Completei meu cartão fidelidade e gostaria de resgatar meu prêmio.`, '_blank')}
+                  onClick={() => window.open(`https://wa.me/5511999999999?text=Olá! Gostaria de consultar sobre o meu prêmio de fidelidade disponível no sistema.`, '_blank')}
                   className="mt-4 px-12 py-6 bg-gold text-ink rounded-full text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-ink hover:text-paper transition-all"
                 >
-                  Resgatar via WhatsApp 📱
+                  Solicitar Resgate 📱
                 </button>
               </motion.div>
             )}
@@ -1797,20 +1797,30 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
       </div>
 
       <div className="flex gap-3">
+        <a
+          href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp || booking.clientPhone)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da Lash Studio Pro. Gostaria de confirmar seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time}?`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-12 h-12 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-sm"
+          title="Confirmar via WhatsApp"
+        >
+          📱
+        </a>
         {['Confirmado', 'Concluído', 'Cancelado'].map(s => (
           <button
             key={s}
             onClick={() => updateStatus(s)}
-            className="w-12 h-12 rounded-full border border-ink/10 flex items-center justify-center hover:bg-ink hover:text-paper transition-all text-lg shadow-sm hover:shadow-md"
-            title={s}
+            className={cn(
+              "px-4 py-2 rounded-xl text-[8px] uppercase tracking-widest font-black transition-all",
+              booking.status === s ? "bg-ink text-paper" : "bg-ink/5 opacity-40 hover:opacity-100"
+            )}
           >
-            {s === 'Confirmado' ? '✅' : s === 'Concluído' ? '💰' : '❌'}
+            {s}
           </button>
         ))}
         <button
           onClick={deleteBooking}
-          className="w-12 h-12 rounded-full border border-red-800/10 flex items-center justify-center hover:bg-red-800 hover:text-paper transition-all text-lg shadow-sm hover:shadow-md"
-          title="Excluir"
+          className="w-10 h-10 border border-red-100 text-red-600 rounded-full flex items-center justify-center text-xs hover:bg-red-50 transition-all ml-4"
         >
           🗑️
         </button>
@@ -2038,18 +2048,6 @@ function App() {
 
         <Navbar activeView={view} setView={setView} />
 
-        {/* Floating WhatsApp Button */}
-        <motion.a
-          href="https://wa.me/5511999999999" // TODO: Replace with real number
-          target="_blank"
-          rel="noopener noreferrer"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          whileHover={{ scale: 1.1 }}
-          className="fixed bottom-24 right-6 md:bottom-10 md:right-10 z-[60] w-16 h-16 bg-[#25D366] text-white rounded-full flex items-center justify-center text-3xl shadow-[0_10px_30px_rgba(37,211,102,0.4)] cursor-pointer"
-        >
-          📱
-        </motion.a>
 
         <main className={cn(
           "max-w-7xl mx-auto px-6 md:px-12 relative z-10",
