@@ -186,7 +186,7 @@ function HomeView({ onStart }: { onStart: () => void }) {
           transition={{ duration: 1.5 }}
           src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&q=80&w=1000"
           className="w-full h-full object-cover"
-          alt="Lash Art"
+          alt="Extensão de cílios profissional na Lash Studio Pro"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent" />
@@ -211,7 +211,7 @@ function HomeView({ onStart }: { onStart: () => void }) {
           className="space-y-4 pt-10"
         >
           <div className="flex items-center gap-3 text-gold">
-            <span className="text-[11px] uppercase tracking-widest font-black">Bem-vinda ao seu Estudo 💖</span>
+            <span className="text-[11px] uppercase tracking-widest font-black">Bem-vinda ao seu Estúdio 💖</span>
           </div>
 
           <h1 className="text-[42px] font-black leading-[1] tracking-tight text-ink">
