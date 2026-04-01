@@ -70,23 +70,29 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-2xl border-t border-ink/5 z-50 pb-safe">
-      <div className="flex justify-around items-center h-20 px-4">
+    <nav className="fixed bottom-6 left-6 right-6 bg-white/70 backdrop-blur-2xl border border-ink/5 z-50 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden pb-safe">
+      <div className="flex justify-around items-center h-16 md:h-20 px-2">
         {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setView(item.id)}
             className={cn(
-              "flex flex-col items-center gap-1.5 transition-all duration-300 relative py-2 px-4",
-              activeView === item.id ? "text-gold scale-110" : "text-ink/30"
+              "flex flex-col items-center gap-1 transition-all duration-300 relative py-2 px-3 md:px-4 flex-1",
+              activeView === item.id ? "text-gold" : "text-ink/30"
             )}
           >
-            <span className="text-2xl">{item.icon}</span>
-            <span className="text-[9px] uppercase tracking-[0.1em] font-bold">{item.label}</span>
+            <span className={cn(
+              "text-xl md:text-2xl transition-transform duration-500",
+              activeView === item.id ? "scale-110 -translate-y-1" : ""
+            )}>{item.icon}</span>
+            <span className={cn(
+              "text-[8px] md:text-[9px] uppercase tracking-[0.1em] font-black transition-opacity",
+              activeView === item.id ? "opacity-100" : "opacity-40"
+            )}>{item.label}</span>
             {activeView === item.id && (
               <motion.div
-                layoutId="nav-active-dot"
-                className="absolute -top-1 w-1 h-1 bg-gold rounded-full shadow-[0_0_10px_rgba(255,51,102,0.8)]"
+                layoutId="nav-active-bg"
+                className="absolute inset-x-1 inset-y-1 bg-gold/5 rounded-2xl -z-10"
               />
             )}
           </button>
@@ -214,7 +220,7 @@ function HomeView({ onStart }: { onStart: () => void }) {
             <span className="text-[11px] uppercase tracking-widest font-black">Bem-vinda ao seu Estúdio 💖</span>
           </div>
 
-          <h1 className="text-[42px] font-black leading-[1] tracking-tight text-ink">
+          <h1 className="text-[34px] md:text-[42px] font-black leading-[1.1] tracking-tight text-ink">
             O Realce <br />
             <span className="text-gold">Perfeito</span> para <br />
             seu Olhar ✨.
@@ -269,14 +275,14 @@ function CatalogView({ services, loading, onSelect }: { services: Service[]; loa
   }
 
   return (
-    <div className="px-6 py-12 space-y-12 pb-32">
+    <div className="px-0 md:px-6 py-6 md:py-12 space-y-12 pb-32">
       <div className="space-y-4 text-center">
         <div className="flex items-center justify-center gap-3 text-gold">
           <span className="text-[10px] uppercase tracking-[0.2em] font-black">Nosso Menu 💖</span>
         </div>
-        <h2 className="text-4xl font-black tracking-tight">Serviços <span className="text-gold">Premium</span></h2>
-        <p className="text-xs opacity-40 max-w-[280px] mx-auto leading-relaxed font-medium">
-          Técnicas exclusivas para realçar sua beleza natural com o máximo de conforto 💅.
+        <h2 className="text-3xl md:text-4xl font-black tracking-tight">Serviços <span className="text-gold">Premium</span></h2>
+        <p className="text-[10px] md:text-xs opacity-40 max-w-[280px] mx-auto leading-relaxed font-black uppercase tracking-widest">
+          Técnicas exclusivas para realçar sua beleza natural 💅.
         </p>
       </div>
 
@@ -375,16 +381,16 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
           </div>
 
           {/* Action Buttons */}
-          <div className="sticky bottom-8 left-0 right-0 flex gap-4 pt-4">
+          <div className="sticky bottom-0 left-0 right-0 flex gap-4 p-8 bg-paper/80 backdrop-blur-md border-t border-ink/5 z-50 pb-safe">
             <button
               onClick={onBook}
-              className="flex-[2] py-6 bg-ink text-paper rounded-2xl text-[10px] uppercase tracking-[0.4em] font-black shadow-2xl active:scale-95 transition-all"
+              className="flex-[2] py-5 bg-ink text-paper rounded-2xl text-[9px] uppercase tracking-[0.3em] font-black shadow-2xl active:scale-95 transition-all"
             >
-              Agendar Agora 📅
+              Agendar ✨
             </button>
             <button
               onClick={onClose}
-              className="flex-1 py-6 border border-ink/10 rounded-2xl text-[10px] uppercase tracking-[0.4em] font-black active:bg-ink/5 transition-all"
+              className="flex-1 py-5 border border-ink/10 rounded-2xl text-[9px] uppercase tracking-[0.3em] font-black active:bg-ink/5 transition-all"
             >
               Voltar
             </button>
@@ -880,33 +886,33 @@ function FidelityView() {
             className="relative"
           >
             {/* Luxury Card Aesthetic */}
-            <div className="aspect-[1.6/1] w-full glass-dark rounded-[40px] p-12 flex flex-col justify-between border border-white/20 shadow-3xl relative overflow-hidden group">
+            <div className="aspect-[1.5/1] md:aspect-[1.6/1] w-full glass-dark rounded-[32px] md:rounded-[40px] p-6 md:p-12 flex flex-col justify-between border border-white/20 shadow-3xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] -translate-y-1/2 translate-x-1/2" />
 
               <div className="flex justify-between items-start relative z-10">
-                <div className="space-y-2">
-                  <h3 className="serif text-4xl text-white">Lash Studio <span className="italic text-gold">Pro</span></h3>
-                  <p className="text-[10px] uppercase tracking-[0.4em] text-white/40">Membro Exclusive</p>
+                <div className="space-y-1">
+                  <h3 className="serif text-2xl md:text-4xl text-white">Lash Studio <span className="italic text-gold">Pro</span></h3>
+                  <p className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] text-white/40 font-black">Membro Exclusive</p>
                 </div>
-                <span className="text-4xl grayscale group-hover:grayscale-0 transition-all duration-700">💎</span>
+                <span className="text-2xl md:text-4xl grayscale group-hover:grayscale-0 transition-all duration-700">💎</span>
               </div>
 
-              <div className="space-y-8 relative z-10">
+              <div className="space-y-6 md:space-y-8 relative z-10">
                 <div className="flex justify-between items-end">
                   <div className="space-y-1">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold">Progresso Atual</p>
-                    <p className="serif text-5xl text-white">
-                      {fidelityCount % 10}/10 <span className="text-xl opacity-40 italic">sessões</span>
+                    <p className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-gold font-black">Progresso Atual</p>
+                    <p className="serif text-3xl md:text-5xl text-white font-black">
+                      {fidelityCount % 10}/10 <span className="text-sm md:text-xl opacity-40 italic font-normal">sessões</span>
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2">Próximo Nível</p>
-                    <div className="flex gap-1">
+                  <div className="text-right flex flex-col items-end">
+                    <p className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2 font-black">Próximo Nível</p>
+                    <div className="flex gap-1 justify-end">
                       {[...Array(10)].map((_, i) => (
                         <div
                           key={i}
                           className={cn(
-                            "w-4 h-1 rounded-full transition-all duration-500",
+                            "w-2 md:w-4 h-1 rounded-full transition-all duration-500",
                             i < (fidelityCount % 10) ? "bg-gold" : "bg-white/10"
                           )}
                         />
@@ -915,9 +921,9 @@ function FidelityView() {
                   </div>
                 </div>
 
-                <div className="pt-8 border-t border-white/10 flex justify-between items-center">
-                  <p className="text-[9px] uppercase tracking-[0.4em] text-white/30">Válido em todas as unidades</p>
-                  <p className="serif text-xl text-gold italic">
+                <div className="pt-4 md:pt-8 border-t border-white/10 flex justify-between items-center">
+                  <p className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] text-white/30 font-black">Válido em todas as unidades</p>
+                  <p className="serif text-sm md:text-xl text-gold italic">
                     {fidelityCount >= 10 ? "Prêmio Disponível! 🎁" : `${10 - (fidelityCount % 10)} para o prêmio`}
                   </p>
                 </div>
@@ -1067,24 +1073,21 @@ function AdminView({ services }: { services: Service[] }) {
 
   return (
     <div className="space-y-16 pb-32">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+      <header className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8">
         <div className="space-y-2">
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight">Painel de <span className="text-gold">Gestão</span></h2>
-          <p className="text-[10px] uppercase tracking-[0.4em] opacity-40">Bem-vinda, {user.email?.split('@')[0]}</p>
+          <h2 className="text-[34px] md:text-6xl font-black tracking-tight leading-tight">Painel de <span className="text-gold">Gestão</span></h2>
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 bg-gold rounded-full animate-pulse" />
+            <p className="text-[10px] uppercase tracking-[0.4em] opacity-40 font-black">Bem-vinda, {user.email?.split('@')[0]}</p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => supabase.auth.signOut()}
-            className="px-6 py-3 border border-red-100 text-red-600 rounded-full text-[9px] uppercase tracking-widest font-black hover:bg-red-50 transition-all"
-          >
-            Sair 🚪
-          </button>
-          <div className="flex gap-2 bg-ink/5 p-1.5 rounded-full backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full xl:w-auto">
+          <div className="grid grid-cols-2 lg:flex gap-2 bg-ink/5 p-1.5 rounded-[24px] md:rounded-full backdrop-blur-md w-full">
             <button
               onClick={() => setActiveTab('agenda')}
               className={cn(
-                "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
+                "px-4 md:px-8 py-3 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-black transition-all duration-500",
                 activeTab === 'agenda' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
               )}
             >
@@ -1093,7 +1096,7 @@ function AdminView({ services }: { services: Service[] }) {
             <button
               onClick={() => setActiveTab('clientes')}
               className={cn(
-                "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
+                "px-4 md:px-8 py-3 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-black transition-all duration-500",
                 activeTab === 'clientes' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
               )}
             >
@@ -1102,7 +1105,7 @@ function AdminView({ services }: { services: Service[] }) {
             <button
               onClick={() => setActiveTab('despesas')}
               className={cn(
-                "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
+                "px-4 md:px-8 py-3 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-black transition-all duration-500",
                 activeTab === 'despesas' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
               )}
             >
@@ -1111,13 +1114,19 @@ function AdminView({ services }: { services: Service[] }) {
             <button
               onClick={() => setActiveTab('servicos')}
               className={cn(
-                "px-8 py-3 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all duration-500",
+                "px-4 md:px-8 py-3 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-black transition-all duration-500",
                 activeTab === 'servicos' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
               )}
             >
               Catálogo
             </button>
           </div>
+          <button
+            onClick={() => supabase.auth.signOut()}
+            className="px-6 py-4 border border-red-100 text-red-600 rounded-2xl md:rounded-full text-[9px] uppercase tracking-widest font-black hover:bg-red-50 transition-all shrink-0"
+          >
+            Sair 🚪
+          </button>
         </div>
       </header>
 
@@ -1358,8 +1367,8 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
 
         <div className="flex-1 flex flex-col">
           {/* Preview Section (Mobile) */}
-          <div className="p-8 bg-ink/5 border-b border-ink/5">
-            <h4 className="text-[9px] uppercase tracking-[0.3em] font-black opacity-40 mb-4">Preview em Tempo Real</h4>
+          <div className="p-4 md:p-8 bg-ink/5 border-b border-ink/5">
+            <h4 className="text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-black opacity-40 mb-4">Preview em Tempo Real</h4>
             {imageList.length > 0 ? (
               <div className="flex gap-4 overflow-x-auto pb-2">
                 <div className="w-32 h-40 shrink-0 rounded-2xl overflow-hidden shadow-xl relative">
@@ -1383,7 +1392,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
           </div>
 
           {/* Form Section */}
-          <form onSubmit={handleSubmit} className="p-8 space-y-8 pb-32">
+          <form onSubmit={handleSubmit} className="p-4 md:p-8 space-y-6 md:space-y-8 pb-32">
             <div className="space-y-6">
               <div className="space-y-2">
                 <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Nome do Item</label>
@@ -1451,7 +1460,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
             </div>
 
             {/* Sticky Actions */}
-            <div className="fixed bottom-0 left-0 right-0 p-6 bg-paper/80 backdrop-blur-md border-t border-ink/5 flex gap-4 z-50">
+            <div className="fixed bottom-0 left-0 right-0 p-6 bg-paper/80 backdrop-blur-md border-t border-ink/5 flex gap-4 z-50 pb-safe">
               <button
                 type="button" onClick={onClose}
                 className="flex-1 py-5 border border-ink/10 rounded-xl text-[9px] uppercase tracking-widest font-black active:bg-ink/5"
@@ -1521,57 +1530,57 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
 
       <div className="grid grid-cols-1 gap-6">
         {clientsList.length === 0 ? (
-          <div className="py-32 text-center glass rounded-[40px] border border-dashed border-ink/10 opacity-40 italic">Nenhum cliente encontrado.</div>
+          <div className="py-20 md:py-32 text-center glass rounded-[40px] border border-dashed border-ink/10 opacity-40 italic">Nenhum cliente encontrado.</div>
         ) : (
           clientsList.map((client: any) => (
             <div
               key={client.phone}
-              className="glass p-8 md:p-10 rounded-[40px] border border-ink/5 hover:border-gold/30 transition-all duration-500 group relative overflow-hidden"
+              className="glass p-6 md:p-10 rounded-[32px] md:rounded-[40px] border border-ink/5 hover:border-gold/30 transition-all duration-500 group relative overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-1 h-full bg-gold/20 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-                <div className="flex items-center gap-8">
-                  <div className="w-20 h-20 bg-ink text-paper rounded-full flex items-center justify-center text-3xl serif shadow-xl">
+              <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 md:gap-8">
+                <div className="flex items-center gap-4 md:gap-8">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-ink text-paper rounded-full flex items-center justify-center text-2xl md:text-3xl serif shadow-xl shrink-0">
                     {client.name.charAt(0)}
                   </div>
-                  <div className="space-y-1">
-                    <h4 className="serif text-3xl">{client.name}</h4>
-                    <p className="text-[10px] uppercase tracking-[0.3em] opacity-40">{client.originalPhone}</p>
+                  <div className="space-y-1 min-w-0">
+                    <h4 className="serif text-2xl md:text-3xl truncate">{client.name}</h4>
+                    <p className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-40 font-black">{client.originalPhone}</p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-12">
-                  <div className="text-center">
-                    <p className="text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1">Total Visitas</p>
-                    <p className="display text-3xl">{client.bookings.length}</p>
+                <div className="flex flex-wrap items-center gap-6 md:gap-12 w-full xl:w-auto">
+                  <div className="text-left md:text-center flex-1 md:flex-none">
+                    <p className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1 font-black">Total Visitas</p>
+                    <p className="display text-2xl md:text-3xl font-black">{client.bookings.length}</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1">Status</p>
-                    <p className={cn(
-                      "text-[9px] font-bold uppercase tracking-widest px-4 py-1 rounded-full",
+                  <div className="text-left md:text-center flex-1 md:flex-none">
+                    <p className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1 font-black">Status</p>
+                    <div className={cn(
+                      "text-[8px] md:text-[9px] font-black uppercase tracking-widest px-3 md:px-4 py-1.5 rounded-full inline-block",
                       client.bookings.filter((b: any) => b.status === 'Concluído').length >= 5
                         ? "bg-gold/10 text-gold"
-                        : "bg-olive/10 text-olive"
+                        : "bg-ink/5 opacity-40"
                     )}>
                       {client.bookings.filter((b: any) => b.status === 'Concluído').length >= 5 ? '💎 Fiel' : '✨ Novo'}
-                    </p>
+                    </div>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 w-full md:w-auto">
                     <a
                       href={`https://wa.me/55${client.phone}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-12 h-12 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-sm"
+                      className="w-12 h-12 bg-green-500/10 text-green-600 rounded-2xl flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-sm"
                       title="Contactar via WhatsApp"
                     >
                       📱
                     </a>
                     <button
                       onClick={() => setSelectedClient(selectedClient === client.phone ? null : client.phone)}
-                      className="px-8 py-3 border border-ink/10 rounded-full text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-ink hover:text-paper transition-all shadow-sm"
+                      className="flex-1 md:flex-none px-6 md:px-8 py-3 border border-ink/10 rounded-2xl md:rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.3em] font-black hover:bg-ink hover:text-paper transition-all shadow-sm"
                     >
-                      {selectedClient === client.phone ? 'Fechar Histórico' : 'Ver Histórico'}
+                      {selectedClient === client.phone ? 'Fechar' : 'Histórico'}
                     </button>
                   </div>
                 </div>
@@ -1623,15 +1632,15 @@ function StatCard({ title, value, color, highlight }: { title: string, value: st
     <motion.div
       whileHover={{ y: -10, rotateX: 5 }}
       className={cn(
-        "bento-card p-10 flex flex-col justify-between min-h-[200px] transition-all duration-500",
+        "bento-card p-8 md:p-10 flex flex-col justify-between min-h-[160px] md:min-h-[200px] transition-all duration-500",
         highlight ? "bg-ink text-paper shadow-3xl" : "glass"
       )}
     >
       <div className="space-y-2">
-        <p className="text-[10px] uppercase tracking-[0.4em] opacity-40">{title}</p>
+        <p className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] opacity-40 font-black">{title}</p>
         <div className="h-px w-8 bg-gold/30" />
       </div>
-      <p className={cn("display text-5xl md:text-6xl", !highlight && color)}>{value}</p>
+      <p className={cn("display text-3xl md:text-6xl font-black", !highlight && color)}>{value}</p>
     </motion.div>
   );
 }
@@ -1758,69 +1767,76 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
   };
 
   return (
-    <div className="glass p-8 rounded-[30px] flex flex-col md:flex-row justify-between items-center gap-8 group hover:border-gold/30 transition-all duration-500 hover:shadow-2xl relative overflow-hidden">
+    <div className="glass p-6 md:p-8 rounded-[32px] flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-8 group hover:border-gold/30 transition-all duration-500 hover:shadow-2xl relative overflow-hidden">
       <div className="absolute top-0 left-0 w-1 h-full bg-gold/20 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-      <div className="flex items-center gap-8">
-        <div className="w-16 h-16 bg-ink text-paper rounded-full flex items-center justify-center text-xl serif">
+      {/* Client Info */}
+      <div className="flex items-center gap-5 md:gap-8">
+        <div className="w-14 h-14 md:w-16 md:h-16 bg-ink text-paper rounded-full flex items-center justify-center text-lg md:text-xl serif shrink-0">
           {booking.clientName.charAt(0)}
         </div>
-        <div>
-          <div className="flex items-center gap-4">
-            <h4 className="serif text-3xl mb-1">{booking.clientName}</h4>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-3">
+            <h4 className="serif text-2xl md:text-3xl truncate">{booking.clientName}</h4>
             <span className={cn(
-              "px-3 py-1 rounded-full text-[8px] uppercase tracking-widest font-bold",
+              "px-3 py-1 rounded-full text-[7px] md:text-[8px] uppercase tracking-widest font-black",
               isRewardReady ? "bg-gold text-ink animate-pulse" : "bg-ink/5 opacity-60"
             )}>
-              Fidelidade: {displayProgress}/10 {isRewardReady && "🎁"}
+              {displayProgress}/10 {isRewardReady && "🎁"}
             </span>
           </div>
-          <p className="text-xs opacity-50 tracking-widest">{booking.clientPhone || booking.clientWhatsapp}</p>
+          <p className="text-[10px] md:text-xs opacity-50 tracking-widest truncate">{booking.clientPhone || booking.clientWhatsapp}</p>
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-12 items-center">
-        <div className="text-center">
-          <p className="text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1">Serviço</p>
-          <p className="serif text-xl">{booking.serviceName}</p>
+      {/* Details Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-12 items-center">
+        <div className="space-y-1">
+          <p className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] opacity-40 font-black">Serviço</p>
+          <p className="serif text-lg md:text-xl truncate">{booking.serviceName}</p>
         </div>
-        <div className="text-center">
-          <p className="text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1">Data/Hora</p>
-          <p className="serif text-xl">{booking.date.split('-').reverse().join('/')} <span className="text-gold italic">às</span> {booking.time}</p>
+        <div className="space-y-1">
+          <p className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] opacity-40 font-black">Data/Hora</p>
+          <p className="serif text-lg md:text-xl whitespace-nowrap">
+            {booking.date.split('-').reverse().join('/')} <span className="text-gold italic text-sm md:text-base">às</span> {booking.time}
+          </p>
         </div>
-        <div className="text-center">
-          <p className="text-[9px] uppercase tracking-[0.2em] opacity-40 mb-1">Status</p>
-          <span className={cn("px-4 py-1 rounded-full text-[9px] uppercase tracking-[0.2em] font-bold", statusColors[booking.status])}>
+        <div className="space-y-1 col-span-2 md:col-span-1">
+          <p className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] opacity-40 font-black">Status</p>
+          <span className={cn("px-4 py-1.5 rounded-full text-[8px] md:text-[9px] uppercase tracking-[0.2em] font-black inline-block", statusColors[booking.status])}>
             {booking.status}
           </span>
         </div>
       </div>
 
-      <div className="flex gap-3">
+      {/* Actions */}
+      <div className="flex flex-wrap items-center gap-3 pt-4 xl:pt-0 border-t xl:border-none border-ink/5">
         <a
           href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp || booking.clientPhone)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da Lash Studio Pro. Gostaria de confirmar seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time}?`)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-12 h-12 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-sm"
+          className="w-12 h-12 bg-green-500/10 text-green-600 rounded-2xl flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-sm"
           title="Confirmar via WhatsApp"
         >
           📱
         </a>
-        {['Confirmado', 'Concluído', 'Cancelado'].map(s => (
-          <button
-            key={s}
-            onClick={() => updateStatus(s)}
-            className={cn(
-              "px-4 py-2 rounded-xl text-[8px] uppercase tracking-widest font-black transition-all",
-              booking.status === s ? "bg-ink text-paper" : "bg-ink/5 opacity-40 hover:opacity-100"
-            )}
-          >
-            {s}
-          </button>
-        ))}
+        <div className="flex gap-2 flex-1 xl:flex-none">
+          {['Confirmado', 'Concluído', 'Cancelado'].map(s => (
+            <button
+              key={s}
+              onClick={() => updateStatus(s)}
+              className={cn(
+                "px-3 md:px-4 py-3 rounded-xl text-[7px] md:text-[8px] uppercase tracking-widest font-black transition-all flex-1 md:flex-none",
+                booking.status === s ? "bg-ink text-paper" : "bg-ink/5 opacity-40 hover:opacity-100"
+              )}
+            >
+              {s === 'Confirmado' ? 'Confirm' : s === 'Concluído' ? 'Concluir' : 'Canc'}
+            </button>
+          ))}
+        </div>
         <button
           onClick={deleteBooking}
-          className="w-10 h-10 border border-red-100 text-red-600 rounded-full flex items-center justify-center text-xs hover:bg-red-50 transition-all ml-4"
+          className="w-12 h-12 border border-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xs hover:bg-red-50 transition-all shrink-0"
         >
           🗑️
         </button>
@@ -1831,18 +1847,18 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
 
 function ExpenseCard({ expense }: { expense: any }) {
   return (
-    <div className="glass p-8 rounded-[30px] flex justify-between items-center group hover:border-red-800/20 transition-all duration-500 hover:shadow-xl relative overflow-hidden">
+    <div className="glass p-6 md:p-8 rounded-[32px] flex flex-row items-center justify-between group hover:border-red-800/20 transition-all duration-500 hover:shadow-xl relative overflow-hidden gap-4">
       <div className="absolute top-0 left-0 w-1 h-full bg-red-800/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="flex items-center gap-8">
-        <div className="w-16 h-16 bg-red-800/5 rounded-full flex items-center justify-center text-2xl">
+      <div className="flex items-center gap-4 md:gap-8 min-w-0">
+        <div className="w-12 h-12 md:w-16 md:h-16 bg-red-800/5 rounded-full flex items-center justify-center text-xl md:text-2xl shrink-0">
           💸
         </div>
-        <div>
-          <h4 className="serif text-3xl mb-1">{expense.description}</h4>
-          <p className="text-[10px] uppercase tracking-[0.3em] opacity-40">{expense.category} • {expense.date.split('-').reverse().join('/')}</p>
+        <div className="min-w-0">
+          <h4 className="serif text-xl md:text-3xl mb-1 truncate">{expense.description}</h4>
+          <p className="text-[8px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-40 font-black truncate">{expense.category} • {expense.date.split('-').reverse().join('/')}</p>
         </div>
       </div>
-      <p className="display text-3xl text-red-800">- R$ {expense.value}</p>
+      <p className="display text-xl md:text-3xl text-red-800 shrink-0 font-black">- R$ {expense.value}</p>
     </div>
   );
 }
@@ -1886,7 +1902,7 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="relative w-full max-w-lg bg-paper p-12 md:p-16 rounded-[50px] shadow-3xl space-y-12 overflow-hidden"
+        className="relative w-full max-w-lg bg-paper p-8 md:p-16 rounded-[40px] md:rounded-[50px] shadow-3xl space-y-8 md:space-y-12 overflow-hidden mx-4"
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-30" />
 
