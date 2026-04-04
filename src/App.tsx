@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext, useMemo, useRef } from 'react';
-import { format, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, isBefore, startOfToday, parseISO } from 'date-fns';
+import { format, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, isBefore, startOfToday, parseISO, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'motion/react';
 import { supabase } from './supabase';
@@ -50,7 +50,20 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 // --- Constants ---
-const TIME_SLOTS = ['08:00', '10:00', '13:00', '15:00', '17:00', '19:00'];
+const getAvailableSlots = (dateStr: string): string[] => {
+  if (!dateStr) return [];
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+
+  if (dayOfWeek === 6) { // Saturday
+    return ['15:00', '17:00'];
+  }
+  if (dayOfWeek === 0) { // Sunday
+    return ['09:00', '13:00', '15:00', '17:00'];
+  }
+  return []; // Monday-Friday
+};
 
 const normalizePhone = (phone: string | undefined | null) => (phone || '').replace(/\D/g, '');
 
@@ -210,9 +223,9 @@ function HomeView({ onStart }: { onStart: () => void }) {
           initial={{ scale: 1.1, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.5 }}
-          src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&q=80&w=1000"
+          src="/hero-jessica.jpg"
           className="w-full h-full object-cover"
-          alt="Extensão de cílios profissional na Lash Studio Pro"
+          alt="Jéssica Saldanha - Lash Studio Pro"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent" />
@@ -270,7 +283,7 @@ function HomeView({ onStart }: { onStart: () => void }) {
                 🏆
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gold">Especialistas 💡</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gold">Jéssica Saldanha 💡</p>
                 <p className="text-[9px] opacity-40 font-bold">Inovação e Técnica</p>
               </div>
             </div>
@@ -472,7 +485,8 @@ function CalendarSelector({ selectedDate, onSelect, monthAvailability }: {
           const isPast = isBefore(day, startOfToday());
           const isOtherMonth = !isSameMonth(day, currentMonth);
           const bookedCount = monthAvailability[dateStr] || 0;
-          const availableCount = TIME_SLOTS.length - bookedCount;
+          const availableSlots = getAvailableSlots(dateStr);
+          const availableCount = availableSlots.length - bookedCount;
           const isFull = availableCount <= 0;
 
           return (
@@ -766,7 +780,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
               <div className="py-10 text-center animate-pulse opacity-40">Consultando horários...</div>
             ) : (
               <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-                {TIME_SLOTS.map(slot => {
+                {getAvailableSlots(formData.date).map(slot => {
                   const isBooked = bookedTimes.includes(slot);
                   const isSelected = formData.time === slot;
                   return (
