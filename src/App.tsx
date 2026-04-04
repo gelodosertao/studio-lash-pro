@@ -124,7 +124,7 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
 
       <div className="flex items-center gap-4">
         <a
-          href="https://wa.me/5511999999999"
+          href="https://wa.me/5577998242647"
           target="_blank"
           className="p-2.5 bg-green-500/10 text-green-600 rounded-full hover:bg-green-500 hover:text-white transition-all text-sm shadow-sm"
         >
@@ -1007,7 +1007,7 @@ function FidelityView() {
                 <h4 className="serif text-4xl">Parabéns!</h4>
                 <p className="text-sm opacity-60">Você completou seu ciclo de fidelidade. <br /> Sua próxima sessão de sobrancelha é por nossa conta!</p>
                 <button
-                  onClick={() => window.open(`https://wa.me/5511999999999?text=Olá! Gostaria de consultar sobre o meu prêmio de fidelidade disponível no sistema.`, '_blank')}
+                  onClick={() => window.open(`https://wa.me/5577998242647?text=Olá! Gostaria de consultar sobre o meu prêmio de fidelidade disponível no sistema.`, '_blank')}
                   className="mt-4 px-12 py-6 bg-gold text-ink rounded-full text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-ink hover:text-paper transition-all"
                 >
                   Solicitar Resgate 📱
