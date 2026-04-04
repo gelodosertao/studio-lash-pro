@@ -400,13 +400,13 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
             <div className="grid grid-cols-1 gap-4">
               {[
                 { icon: '✨', title: 'Acabamento Natural', desc: 'Fios leves e curvatura perfeita.' },
-                { icon: '🛡️', title: 'Materiais Hipoalergênicos', desc: 'Segurança total para seus olhos.' },
-                { icon: '⏳', title: 'Alta Durabilidade', desc: 'Retenção superior de até 4 semanas.' }
+                { icon: '🛡️', title: 'Materiais de alta qualidade', desc: 'Segurança total para seus olhos.' },
+                { icon: '⏳', title: 'Manutenção', desc: 'Retorno recomendado de 15 a 20 dias.', titleClass: 'font-bold' }
               ].map((item, i) => (
                 <div key={i} className="flex gap-4 p-5 glass rounded-3xl border border-ink/5">
                   <span className="text-2xl">{item.icon}</span>
                   <div className="space-y-0.5">
-                    <p className="text-[10px] font-black uppercase tracking-widest">{item.title}</p>
+                    <p className={cn("text-[10px] uppercase tracking-widest", item.titleClass ? item.titleClass : "font-black")}>{item.title}</p>
                     <p className="text-[10px] opacity-40 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
@@ -528,7 +528,8 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
     clientWhatsapp: '',
     date: '',
     time: '',
-    serviceType: 'Aplicação' as 'Aplicação' | 'Manutenção'
+    serviceType: 'Aplicação' as 'Aplicação' | 'Manutenção',
+    mapping: 'Boneca' // default
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -633,7 +634,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         clientName: formData.clientName,
         clientWhatsapp: normalizePhone(formData.clientWhatsapp),
         serviceId: selectedService?.id || 'custom',
-        serviceName: `${selectedService?.name || 'Personalizado'} (${formData.serviceType})`,
+        serviceName: `${selectedService?.name || 'Personalizado'} (${formData.serviceType}) - Map: ${formData.mapping}`,
         status: 'Pendente',
         date: formData.date,
         time: formData.time,
@@ -763,6 +764,67 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
           </div>
         </div>
 
+        {/* New Step: Eye Mapping */}
+        <div className="space-y-6 pt-8 border-t border-ink/5">
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-[0.3em] font-black text-gold block">Escolha o seu olhar! ✨</label>
+            <p className="text-[10px] opacity-50 uppercase tracking-widest font-bold">Baseado no formato e efeito desejado.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { id: 'Boneca', title: 'Mapeamento Boneca 👁️', desc: 'Deixa o olhar mais aberto e arredondado. Os fios maiores ficam no centro dos olhos, criando um efeito de "olho de boneca", bem delicado e iluminado.' },
+              { id: 'Esquilo', title: 'Mapeamento Esquilo 🐿️', desc: 'Cria um efeito lifting no olhar. Os fios vão crescendo até antes do final do olho e diminuem levemente no cantinho, deixando o olhar mais alongado.' },
+              { id: 'Gatinho', title: 'Mapeamento Gatinho 🐱', desc: 'Efeito alongado e marcante. Os fios aumentam gradualmente até o canto externo, formando aquele puxadinho estilo delineado, deixando o olhar mais sensual.' }
+            ].map(mapping => (
+              <button
+                key={mapping.id}
+                type="button"
+                onClick={() => setFormData({ ...formData, mapping: mapping.id })}
+                className={cn(
+                  "p-5 md:p-6 rounded-[24px] md:rounded-[32px] border transition-all text-left flex flex-col gap-4 group relative overflow-hidden",
+                  formData.mapping === mapping.id ? "bg-ink border-ink text-white shadow-xl scale-[1.02]" : "bg-white border-ink/10 hover:border-gold/30 hover:shadow-md"
+                )}
+              >
+                {formData.mapping === mapping.id && (
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[20px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+                )}
+
+                {/* Imagem do Mapping */}
+                <div className={cn(
+                  "h-24 w-full rounded-2xl bg-cover bg-center transition-all bg-white/5",
+                  formData.mapping === mapping.id ? "opacity-100 ring-2 ring-white/20" : "opacity-40 group-hover:opacity-80 grayscale mix-blend-multiply",
+                  mapping.id === 'Boneca' ? "bg-[url('/map-boneca.png')] bg-ink/5" :
+                    mapping.id === 'Esquilo' ? "bg-[url('/map-esquilo.png')] bg-ink/5" :
+                      "bg-[url('/map-gatinho.png')] bg-ink/5"
+                )}>
+                  {/* Fallback caso a imagem não exista - mostramos o ícone grande */}
+                  <div className="w-full h-full flex items-center justify-center opacity-30 text-4xl">
+                    {mapping.title.split(' ')[2]}
+                  </div>
+                </div>
+
+                <div className="space-y-2 relative z-10 font-bold min-h-[90px]">
+                  <div className="flex justify-between items-start gap-2">
+                    <span className="text-sm font-black uppercase tracking-widest">{mapping.title.replace('Mapeamento ', '')}</span>
+                    <div className={cn(
+                      "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0",
+                      formData.mapping === mapping.id ? "border-gold" : "border-ink/20"
+                    )}>
+                      {formData.mapping === mapping.id && <div className="w-2.5 h-2.5 rounded-full bg-gold" />}
+                    </div>
+                  </div>
+                  <p className={cn(
+                    "text-[10px] leading-relaxed",
+                    formData.mapping === mapping.id ? "opacity-80 font-normal" : "opacity-60"
+                  )}>
+                    {mapping.desc}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Step 2: Calendar */}
         <div className="space-y-6">
           <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-black block">Selecione o Dia</label>
@@ -854,6 +916,10 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
                   <div className="space-y-1">
                     <p className="text-[8px] uppercase tracking-widest opacity-40">Horário</p>
                     <p className="serif text-xl">{formData.time}</p>
+                  </div>
+                  <div className="space-y-1 col-span-2">
+                    <p className="text-[8px] uppercase tracking-widest opacity-40">Mapeamento</p>
+                    <p className="serif text-xl font-bold">{formData.mapping}</p>
                   </div>
                 </div>
               </div>
