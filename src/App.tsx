@@ -218,17 +218,17 @@ function HomeView({ onStart }: { onStart: () => void }) {
   return (
     <div className="min-h-[calc(100vh-80px)] flex flex-col -mt-12 -mx-6 relative overflow-hidden bg-white">
       {/* Hero Section */}
-      <div className="relative h-[65vh] w-full overflow-hidden">
+      <div className="relative h-[75vh] w-full overflow-hidden bg-black flex items-center justify-center">
         <motion.img
           initial={{ scale: 1.1, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.5 }}
           src="/hero-jessica.jpg"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           alt="Jéssica Saldanha - Lash Studio Pro"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
         {/* Modern Label */}
         <motion.div
