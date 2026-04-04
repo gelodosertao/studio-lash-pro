@@ -178,7 +178,7 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
           <div className="flex items-center gap-2">
             <span className="text-[9px] uppercase tracking-widest opacity-40 font-bold">🛠️ {service.duration}</span>
             <div className="w-1 h-1 rounded-full bg-gold/40" />
-            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Refil: R$ {service.maintenance_price || (service.price * 0.6).toFixed(0)} 💖</span>
+            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Manutenção: R$ {service.maintenance_price || (service.price * 0.6).toFixed(0)} 💖</span>
           </div>
         </div>
 
