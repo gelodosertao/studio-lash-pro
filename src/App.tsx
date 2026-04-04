@@ -549,7 +549,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
           const { count, error } = await supabase
             .from('bookings')
             .select('*', { count: 'exact', head: true })
-            .or(`clientWhatsapp.eq.${normalized},clientPhone.eq.${normalized}`)
+            .eq('clientWhatsapp', normalized)
             .eq('status', 'Concluído');
 
           if (error) throw error;
@@ -630,12 +630,13 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
     setIsSaving(true);
     try {
       const bookingData = {
-        ...formData,
+        clientName: formData.clientName,
         clientWhatsapp: normalizePhone(formData.clientWhatsapp),
         serviceId: selectedService?.id || 'custom',
         serviceName: `${selectedService?.name || 'Personalizado'} (${formData.serviceType})`,
-        price: formData.serviceType === 'Manutenção' ? (selectedService?.maintenance_price || 0) : (selectedService?.price || 0),
         status: 'Pendente',
+        date: formData.date,
+        time: formData.time,
         created_at: new Date().toISOString(),
         fcmToken: localStorage.getItem('fcm_token') || null
       };
@@ -903,7 +904,7 @@ function FidelityView() {
       const { count, error } = await supabase
         .from('bookings')
         .select('*', { count: 'exact', head: true })
-        .or(`clientWhatsapp.eq.${normalized},clientPhone.eq.${normalized}`)
+        .eq('clientWhatsapp', normalized)
         .eq('status', 'Concluído');
 
       if (error) throw error;
@@ -1572,14 +1573,14 @@ function ClientsTab({ bookings }: { bookings: any[] }) {
 
   // Group bookings by client WhatsApp or Phone
   const clientsMap = bookings.reduce((acc: any, booking: any) => {
-    const phone = normalizePhone(booking.clientWhatsapp || booking.clientPhone);
+    const phone = normalizePhone(booking.clientWhatsapp);
     if (!phone) return acc;
 
     if (!acc[phone]) {
       acc[phone] = {
         name: booking.clientName,
         phone: phone,
-        originalPhone: booking.clientWhatsapp || booking.clientPhone,
+        originalPhone: booking.clientWhatsapp,
         bookings: []
       };
     }
@@ -1732,8 +1733,8 @@ function StatCard({ title, value, color, highlight }: { title: string, value: st
 
 function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[] }) {
   const clientBookings = allBookings.filter(b => {
-    const bPhone = normalizePhone(b.clientWhatsapp || b.clientPhone);
-    const currentPhone = normalizePhone(booking.clientWhatsapp || booking.clientPhone);
+    const bPhone = normalizePhone(b.clientWhatsapp);
+    const currentPhone = normalizePhone(booking.clientWhatsapp);
     return bPhone === currentPhone && b.status === 'Concluído';
   }).length;
   const isRewardReady = clientBookings > 0 && clientBookings % 10 === 0;
@@ -1745,7 +1746,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
         .from('bookings')
         .update({
           status: newStatus,
-          clientWhatsapp: normalizePhone(booking.clientWhatsapp || booking.clientPhone)
+          clientWhatsapp: normalizePhone(booking.clientWhatsapp)
         })
         .eq('id', booking.id);
 
@@ -1870,7 +1871,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
               {displayProgress}/10 {isRewardReady && "🎁"}
             </span>
           </div>
-          <p className="text-[10px] md:text-xs opacity-50 tracking-widest truncate">{booking.clientPhone || booking.clientWhatsapp}</p>
+          <p className="text-[10px] md:text-xs opacity-50 tracking-widest truncate">{booking.clientWhatsapp}</p>
         </div>
       </div>
 
@@ -1897,7 +1898,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-3 pt-4 xl:pt-0 border-t xl:border-none border-ink/5">
         <a
-          href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp || booking.clientPhone)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da Lash Studio Pro. Gostaria de confirmar seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time}?`)}`}
+          href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da Lash Studio Pro. Gostaria de confirmar seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time}?`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="w-12 h-12 bg-green-500/10 text-green-600 rounded-2xl flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-sm"
