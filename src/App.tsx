@@ -1378,12 +1378,17 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
         className="min-h-screen flex flex-col bg-paper"
       >
         {/* Header */}
-        <div className="p-8 flex justify-between items-center border-b border-ink/5">
+        <div className="p-8 flex items-center gap-6 border-b border-ink/5">
+          <button
+            onClick={onClose}
+            className="w-12 h-12 rounded-full bg-ink/5 flex items-center justify-center text-xl hover:bg-gold hover:text-white transition-all shadow-sm"
+          >
+            ←
+          </button>
           <div className="space-y-1">
             <h3 className="serif text-3xl">{service ? 'Editar' : 'Novo'} <span className="italic text-gold">Item</span></h3>
             <p className="text-[9px] uppercase tracking-[0.3em] opacity-40">Gestão do Catálogo</p>
           </div>
-          <button onClick={onClose} className="w-10 h-10 rounded-full bg-ink/5 flex items-center justify-center text-lg">✕</button>
         </div>
 
         <div className="flex-1 flex flex-col">
