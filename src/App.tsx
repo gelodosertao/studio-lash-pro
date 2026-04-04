@@ -12,6 +12,7 @@ interface Service {
   name: string;
   description: string;
   price: number;
+  maintenancePrice?: number;
   duration: string;
   images: string[];
   video?: string;
@@ -175,9 +176,9 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
         <div className="space-y-1">
           <h3 className="text-2xl font-bold tracking-tight">{service.name}</h3>
           <div className="flex items-center gap-2">
-            <span className="text-[9px] uppercase tracking-widest opacity-40 font-bold">🛠️ Manutenção: {service.duration}</span>
+            <span className="text-[9px] uppercase tracking-widest opacity-40 font-bold">🛠️ {service.duration}</span>
             <div className="w-1 h-1 rounded-full bg-gold/40" />
-            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Design Exclusivo 💅</span>
+            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Refil: R$ {service.maintenancePrice || (service.price * 0.6).toFixed(0)} �</span>
           </div>
         </div>
 
@@ -367,8 +368,9 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
                 <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-black">Procedimento de Elite</p>
               </div>
               <div className="text-right">
-                <p className="serif text-3xl text-gold">R$ {service.price}</p>
-                <p className="text-[9px] opacity-40 uppercase tracking-widest text-gold font-black">🛠️ Manutenção: {service.duration}</p>
+                <p className="text-[8px] uppercase tracking-widest opacity-40 mb-1">A partir de</p>
+                <p className="serif text-3xl text-gold leading-tight">R$ {service.price}</p>
+                <p className="text-[9px] opacity-40 uppercase tracking-widest mt-1">Manutenção: R$ {service.maintenancePrice || '--'}</p>
               </div>
             </div>
 
@@ -511,7 +513,8 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
     clientName: '',
     clientWhatsapp: '',
     date: '',
-    time: ''
+    time: '',
+    serviceType: 'Aplicação' as 'Aplicação' | 'Manutenção'
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -616,7 +619,8 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         ...formData,
         clientWhatsapp: normalizePhone(formData.clientWhatsapp),
         serviceId: selectedService?.id || 'custom',
-        serviceName: selectedService?.name || 'Personalizado',
+        serviceName: `${selectedService?.name || 'Personalizado'} (${formData.serviceType})`,
+        price: formData.serviceType === 'Manutenção' ? (selectedService?.maintenancePrice || 0) : (selectedService?.price || 0),
         status: 'Pendente',
         created_at: new Date().toISOString(),
         fcmToken: localStorage.getItem('fcm_token') || null
@@ -712,6 +716,35 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
               value={formData.clientWhatsapp}
               onChange={e => setFormData({ ...formData, clientWhatsapp: e.target.value })}
             />
+          </div>
+        </div>
+
+        {/* New Step: Service Type Selection */}
+        <div className="space-y-6 pt-8 border-t border-ink/5">
+          <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-black block">Tipo de Atendimento</label>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, serviceType: 'Aplicação' })}
+              className={cn(
+                "p-6 rounded-2xl border transition-all flex flex-col gap-2",
+                formData.serviceType === 'Aplicação' ? "bg-gold border-gold text-white shadow-lg" : "bg-white border-ink/10"
+              )}
+            >
+              <span className="text-sm font-black">Aplicação Total</span>
+              <span className="text-[10px] opacity-60">R$ {selectedService?.price}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, serviceType: 'Manutenção' })}
+              className={cn(
+                "p-6 rounded-2xl border transition-all flex flex-col gap-2",
+                formData.serviceType === 'Manutenção' ? "bg-gold border-gold text-white shadow-lg" : "bg-white border-ink/10"
+              )}
+            >
+              <span className="text-sm font-black">Manutenção</span>
+              <span className="text-[10px] opacity-60">R$ {selectedService?.maintenancePrice || (Number(selectedService?.price) * 0.6).toFixed(0)}</span>
+            </button>
           </div>
         </div>
 
@@ -1329,6 +1362,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
     name: service?.name || '',
     description: service?.description || '',
     price: service?.price || 0,
+    maintenancePrice: service?.maintenancePrice || 0,
     duration: service?.duration || '',
     images: service?.images?.join(', ') || '',
     video: service?.video || '',
@@ -1345,6 +1379,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
       const data = {
         ...formData,
         price: Number(formData.price),
+        maintenancePrice: Number(formData.maintenancePrice),
         order: Number(formData.order),
         images: imageList
       };
@@ -1439,22 +1474,32 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Manutenção</label>
+                  <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Valor Manutenção (R$)</label>
+                  <input
+                    type="number" required placeholder="0,00"
+                    value={formData.maintenancePrice} onChange={e => setFormData({ ...formData, maintenancePrice: Number(e.target.value) })}
+                    className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Dias de Manutenção</label>
                   <input
                     type="text" required placeholder="Ex: 15 a 20 dias"
                     value={formData.duration} onChange={e => setFormData({ ...formData, duration: e.target.value })}
                     className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
                   />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Ordem</label>
-                <input
-                  type="number" placeholder="0"
-                  value={formData.order} onChange={e => setFormData({ ...formData, order: Number(e.target.value) })}
-                  className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
-                />
+                <div className="space-y-2">
+                  <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Ordem</label>
+                  <input
+                    type="number" placeholder="0"
+                    value={formData.order} onChange={e => setFormData({ ...formData, order: Number(e.target.value) })}
+                    className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
