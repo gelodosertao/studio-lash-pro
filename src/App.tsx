@@ -12,7 +12,7 @@ interface Service {
   name: string;
   description: string;
   price: number;
-  maintenancePrice?: number;
+  maintenance_price?: number;
   duration: string;
   images: string[];
   video?: string;
@@ -178,7 +178,7 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
           <div className="flex items-center gap-2">
             <span className="text-[9px] uppercase tracking-widest opacity-40 font-bold">🛠️ {service.duration}</span>
             <div className="w-1 h-1 rounded-full bg-gold/40" />
-            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Refil: R$ {service.maintenancePrice || (service.price * 0.6).toFixed(0)} �</span>
+            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Refil: R$ {service.maintenance_price || (service.price * 0.6).toFixed(0)} 💖</span>
           </div>
         </div>
 
@@ -370,7 +370,7 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
               <div className="text-right">
                 <p className="text-[8px] uppercase tracking-widest opacity-40 mb-1">A partir de</p>
                 <p className="serif text-3xl text-gold leading-tight">R$ {service.price}</p>
-                <p className="text-[9px] opacity-40 uppercase tracking-widest mt-1">Manutenção: R$ {service.maintenancePrice || '--'}</p>
+                <p className="text-[9px] opacity-40 uppercase tracking-widest mt-1">Manutenção: R$ {service.maintenance_price || '--'}</p>
               </div>
             </div>
 
@@ -620,7 +620,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         clientWhatsapp: normalizePhone(formData.clientWhatsapp),
         serviceId: selectedService?.id || 'custom',
         serviceName: `${selectedService?.name || 'Personalizado'} (${formData.serviceType})`,
-        price: formData.serviceType === 'Manutenção' ? (selectedService?.maintenancePrice || 0) : (selectedService?.price || 0),
+        price: formData.serviceType === 'Manutenção' ? (selectedService?.maintenance_price || 0) : (selectedService?.price || 0),
         status: 'Pendente',
         created_at: new Date().toISOString(),
         fcmToken: localStorage.getItem('fcm_token') || null
@@ -743,7 +743,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
               )}
             >
               <span className="text-sm font-black">Manutenção</span>
-              <span className="text-[10px] opacity-60">R$ {selectedService?.maintenancePrice || (Number(selectedService?.price) * 0.6).toFixed(0)}</span>
+              <span className="text-[10px] opacity-60">R$ {selectedService?.maintenance_price || (Number(selectedService?.price) * 0.6).toFixed(0)}</span>
             </button>
           </div>
         </div>
@@ -1362,7 +1362,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
     name: service?.name || '',
     description: service?.description || '',
     price: service?.price || 0,
-    maintenancePrice: service?.maintenancePrice || 0,
+    maintenance_price: service?.maintenance_price || 0,
     duration: service?.duration || '',
     images: service?.images?.join(', ') || '',
     video: service?.video || '',
@@ -1379,7 +1379,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
       const data = {
         ...formData,
         price: Number(formData.price),
-        maintenancePrice: Number(formData.maintenancePrice),
+        maintenance_price: Number(formData.maintenance_price),
         order: Number(formData.order),
         images: imageList
       };
@@ -1477,7 +1477,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
                   <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Valor Manutenção (R$)</label>
                   <input
                     type="number" required placeholder="0,00"
-                    value={formData.maintenancePrice} onChange={e => setFormData({ ...formData, maintenancePrice: Number(e.target.value) })}
+                    value={formData.maintenance_price} onChange={e => setFormData({ ...formData, maintenance_price: Number(e.target.value) })}
                     className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
                   />
                 </div>
