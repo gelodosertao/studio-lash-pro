@@ -69,36 +69,55 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
     { id: 'fidelity', label: 'Clube', icon: '💖' },
   ];
 
+  // If in admin view, we don't show the main navbar, or we show it but with an "Admin" active state
+  // Let's assume we show it to allow quick access back to home/catalog
+  const allItems = activeView === 'admin'
+    ? [...navItems, { id: 'admin', label: 'Painel', icon: '⚙️' }]
+    : navItems;
+
   return (
-    <nav className="fixed bottom-6 left-6 right-6 bg-white/70 backdrop-blur-2xl border border-ink/5 z-50 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden pb-safe">
-      <div className="flex justify-around items-center h-16 md:h-20 px-2">
-        {navItems.map((item) => (
+    <header className="fixed top-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-2xl border-b border-gold/5 px-6 py-4 flex items-center justify-between shadow-sm">
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">💖</span>
+        <div className="hidden sm:block">
+          <h1 className="text-sm font-black uppercase tracking-tighter leading-none">Lash Studio</h1>
+          <p className="text-[10px] text-gold font-black uppercase tracking-widest leading-none">Pro</p>
+        </div>
+      </div>
+
+      <div className="flex bg-ink/5 p-1 rounded-full overflow-hidden">
+        {allItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setView(item.id)}
             className={cn(
-              "flex flex-col items-center gap-1 transition-all duration-300 relative py-2 px-3 md:px-4 flex-1",
-              activeView === item.id ? "text-gold" : "text-ink/30"
+              "flex items-center gap-2 px-4 md:px-6 py-2.5 rounded-full transition-all duration-500 relative",
+              activeView === item.id ? "text-paper" : "text-ink/40 hover:text-ink/60"
             )}
           >
-            <span className={cn(
-              "text-xl md:text-2xl transition-transform duration-500",
-              activeView === item.id ? "scale-110 -translate-y-1" : ""
-            )}>{item.icon}</span>
-            <span className={cn(
-              "text-[8px] md:text-[9px] uppercase tracking-[0.1em] font-black transition-opacity",
-              activeView === item.id ? "opacity-100" : "opacity-40"
-            )}>{item.label}</span>
+            <span className="text-sm md:text-base">{item.icon}</span>
+            <span className="text-[10px] uppercase font-black tracking-widest hidden md:inline">{item.label}</span>
             {activeView === item.id && (
               <motion.div
-                layoutId="nav-active-bg"
-                className="absolute inset-x-1 inset-y-1 bg-gold/5 rounded-2xl -z-10"
+                layoutId="nav-active-pill"
+                className="absolute inset-0 bg-gold rounded-full -z-10 shadow-lg"
+                transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
               />
             )}
           </button>
         ))}
       </div>
-    </nav>
+
+      <div className="flex items-center gap-4">
+        <a
+          href="https://wa.me/5511999999999"
+          target="_blank"
+          className="p-2.5 bg-green-500/10 text-green-600 rounded-full hover:bg-green-500 hover:text-white transition-all text-sm shadow-sm"
+        >
+          📱
+        </a>
+      </div>
+    </header>
   );
 }
 
@@ -156,7 +175,7 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
         <div className="space-y-1">
           <h3 className="text-2xl font-bold tracking-tight">{service.name}</h3>
           <div className="flex items-center gap-2">
-            <span className="text-[9px] uppercase tracking-widest opacity-40 font-bold">⏱️ {service.duration}</span>
+            <span className="text-[9px] uppercase tracking-widest opacity-40 font-bold">🛠️ Manutenção: {service.duration}</span>
             <div className="w-1 h-1 rounded-full bg-gold/40" />
             <span className="text-[9px] uppercase tracking-widest text-gold font-black">Design Exclusivo 💅</span>
           </div>
@@ -349,7 +368,7 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
               </div>
               <div className="text-right">
                 <p className="serif text-3xl text-gold">R$ {service.price}</p>
-                <p className="text-[9px] opacity-40 uppercase tracking-widest">{service.duration}</p>
+                <p className="text-[9px] opacity-40 uppercase tracking-widest text-gold font-black">🛠️ Manutenção: {service.duration}</p>
               </div>
             </div>
 
@@ -1277,7 +1296,7 @@ function ServicesTab({ services, onEdit }: { services: Service[]; onEdit: (s: Se
                   <div className="flex items-center gap-2">
                     <span className="text-[9px] uppercase tracking-widest font-black text-gold">R$ {service.price}</span>
                     <span className="w-1 h-1 bg-ink/10 rounded-full" />
-                    <span className="text-[9px] uppercase tracking-widest opacity-40">{service.duration}</span>
+                    <span className="text-[9px] uppercase tracking-widest opacity-40">🛠️ Manutenção: {service.duration}</span>
                   </div>
                 </div>
                 <p className="text-[10px] opacity-50 line-clamp-2 leading-relaxed">{service.description}</p>
@@ -1413,9 +1432,9 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Duração</label>
+                  <label className="text-[9px] uppercase tracking-widest opacity-40 font-black">Manutenção</label>
                   <input
-                    type="text" required placeholder="Ex: 2h"
+                    type="text" required placeholder="Ex: 15 a 20 dias"
                     value={formData.duration} onChange={e => setFormData({ ...formData, duration: e.target.value })}
                     className="w-full bg-ink/5 border-none rounded-xl p-4 text-sm focus:ring-1 focus:ring-gold outline-none"
                   />
@@ -2067,7 +2086,7 @@ function App() {
 
         <main className={cn(
           "max-w-7xl mx-auto px-6 md:px-12 relative z-10",
-          view === 'home' ? "pt-12 md:pt-40" : "pt-32 md:pt-48 pb-32"
+          view === 'home' ? "pt-24 md:pt-48" : "pt-28 md:pt-44 pb-32"
         )}>
           <AnimatePresence mode="wait">
             <motion.div
