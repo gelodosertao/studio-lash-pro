@@ -1258,8 +1258,9 @@ function ServicesTab({ services, onEdit }: { services: Service[]; onEdit: (s: Se
         .eq('id', id);
 
       if (error) throw error;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting service:', error);
+      alert('Erro ao excluir do catálogo: ' + (error.message || 'Erro desconhecido'));
     }
   };
 
@@ -1329,7 +1330,7 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
     description: service?.description || '',
     price: service?.price || 0,
     duration: service?.duration || '',
-    images: service?.images.join(', ') || '',
+    images: service?.images?.join(', ') || '',
     video: service?.video || '',
     order: service?.order || 0
   });
@@ -1361,8 +1362,9 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
         if (error) throw error;
       }
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving service:', error);
+      alert('Erro ao salvar no catálogo: ' + (error.message || 'Erro desconhecido'));
     } finally {
       setIsSaving(false);
     }
