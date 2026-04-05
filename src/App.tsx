@@ -148,7 +148,10 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
       className="group relative bg-white rounded-[32px] overflow-hidden border border-ink/5 shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(255,51,102,0.1)]"
     >
       {/* Image Carousel */}
-      <div className="relative aspect-[4/5] overflow-hidden">
+      <div
+        className="relative aspect-[4/5] overflow-hidden cursor-pointer"
+        onClick={onShowDetail}
+      >
         <AnimatePresence mode="wait">
           <motion.img
             key={currentImg}
@@ -287,7 +290,6 @@ function HomeView({ onStart }: { onStart: () => void }) {
                 <p className="text-[9px] opacity-40 font-bold">Inovação e Técnica</p>
               </div>
             </div>
-            <span className="text-gold">→</span>
           </div>
         </motion.div>
       </div>
