@@ -1990,7 +1990,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-3 pt-4 xl:pt-0 border-t xl:border-none border-ink/5">
         <a
-          href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da Lash Studio Pro. Gostaria de confirmar seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time}?`)}`}
+          href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da JS Lash Studio. Passando para avisar que seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time} foi registrado!`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="w-12 h-12 bg-green-500/10 text-green-600 rounded-2xl flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-sm"
