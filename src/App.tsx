@@ -102,7 +102,7 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
       <div className="flex items-center gap-3">
         <span className="text-2xl">💖</span>
         <div className="hidden sm:block">
-          <h1 className="text-sm font-black uppercase tracking-tighter leading-none">Lash Studio</h1>
+          <h1 className="text-sm font-black uppercase tracking-tighter leading-none">JS Studio Lash</h1>
           <p className="text-[10px] text-gold font-black uppercase tracking-widest leading-none">Pro</p>
         </div>
       </div>
@@ -236,7 +236,7 @@ function HomeView({ onStart }: { onStart: () => void }) {
           transition={{ duration: 1.5 }}
           src="/hero-jessica.jpg"
           className="w-full h-full object-contain"
-          alt="Jéssica Saldanha - Lash Studio Pro"
+          alt="Jéssica Saldanha - JS Studio Lash"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -1044,12 +1044,13 @@ function FidelityView() {
             className="relative"
           >
             {/* Luxury Card Aesthetic */}
-            <div className="aspect-[1.5/1] md:aspect-[1.6/1] w-full glass-dark rounded-[32px] md:rounded-[40px] p-6 md:p-12 flex flex-col justify-between border border-white/20 shadow-3xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gold/10 blur-[100px] -translate-y-1/2 translate-x-1/2" />
+            <div className="aspect-[1.5/1] md:aspect-[1.6/1] w-full bg-gradient-to-br from-ink via-ink/95 to-gold/40 rounded-[32px] md:rounded-[40px] p-6 md:p-12 flex flex-col justify-between border border-gold/40 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gold/40 blur-[80px] -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-gold/20 blur-[80px] translate-y-1/2 -translate-x-1/2" />
 
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-1">
-                  <h3 className="serif text-2xl md:text-4xl text-white">Lash Studio <span className="italic text-gold">Pro</span></h3>
+                  <h3 className="serif text-2xl md:text-4xl text-white">JS Studio <span className="italic text-gold">Lash</span></h3>
                   <p className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] text-white/40 font-black">Membro Exclusive</p>
                 </div>
                 <span className="text-2xl md:text-4xl grayscale group-hover:grayscale-0 transition-all duration-700">💎</span>
@@ -1990,7 +1991,7 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-3 pt-4 xl:pt-0 border-t xl:border-none border-ink/5">
         <a
-          href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da JS Lash Studio. Passando para avisar que seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time} foi registrado!`)}`}
+          href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da JS Studio Lash. Passando para avisar que seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time} foi registrado!`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="w-12 h-12 bg-green-500/10 text-green-600 rounded-2xl flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-sm"
