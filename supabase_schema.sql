@@ -4,6 +4,7 @@ CREATE TABLE services (
   name TEXT NOT NULL,
   description TEXT,
   price NUMERIC NOT NULL,
+  maintenance_price NUMERIC,
   duration TEXT,
   images TEXT[] DEFAULT '{}',
   video TEXT,
@@ -58,7 +59,7 @@ CREATE POLICY "Cliente vê seu próprio agendamento via WhatsApp" ON bookings FO
 
 ALTER TABLE availability ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Qualquer um vê disponibilidade" ON availability FOR SELECT USING (true);
-CREATE POLICY "Qualquer um insere/atualiza disponibilidade ao agendar" ON availability FOR ALL USING (true);
+CREATE POLICY "Qualquer um insere/atualiza disponibilidade ao agendar" ON availability FOR ALL USING (true) WITH CHECK (true);
 
 ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Somente admin vê e gerencia despesas" ON expenses FOR ALL USING (auth.role() = 'authenticated');

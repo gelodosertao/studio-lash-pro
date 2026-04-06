@@ -672,8 +672,9 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
 
       setIsSubmitted(true);
       setShowConfirmation(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving booking:', error);
+      alert('Erro ao salvar agendamento: ' + (error.message || 'Verifique sua conexão e tente novamente.'));
     } finally {
       setIsSaving(false);
     }
