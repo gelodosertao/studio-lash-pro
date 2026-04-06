@@ -543,8 +543,8 @@ function CalendarSelector({ selectedDate, onSelect, monthAvailability }: {
 
 function BookingView({ selectedService, onBack }: { selectedService: Service | null; onBack: () => void }) {
   const [formData, setFormData] = useState({
-    clientName: '',
-    clientWhatsapp: '',
+    clientName: localStorage.getItem('lastClientName') || '',
+    clientWhatsapp: localStorage.getItem('lastClientWhatsapp') || '',
     date: '',
     time: '',
     serviceType: 'Aplicação' as 'Aplicação' | 'Manutenção',
@@ -653,6 +653,11 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
 
   const saveBooking = async () => {
     setIsSaving(true);
+
+    // Save to local storage to remember this user later
+    localStorage.setItem('lastClientName', formData.clientName);
+    localStorage.setItem('lastClientWhatsapp', formData.clientWhatsapp);
+
     try {
       const bookingData = {
         clientName: formData.clientName,
