@@ -98,15 +98,15 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
     : navItems;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-2xl border-b border-gold/5 px-6 py-4 flex items-center justify-between shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className="hidden sm:block">
+    <header className="fixed top-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-2xl border-b border-gold/5 px-6 py-4 flex items-center justify-center shadow-sm">
+      <div className="absolute left-6 items-center gap-3 hidden md:flex">
+        <div>
           <h1 className="text-sm font-black uppercase tracking-tighter leading-none">JS Studio Lash</h1>
           <p className="text-[10px] text-gold font-black uppercase tracking-widest leading-none">Pro</p>
         </div>
       </div>
 
-      <div className="flex bg-ink/5 p-1 rounded-full overflow-hidden">
+      <div className="flex bg-ink/5 p-1 rounded-full overflow-hidden relative z-10 w-full sm:w-auto overflow-x-auto">
         {allItems.map((item) => (
           <button
             key={item.id}
