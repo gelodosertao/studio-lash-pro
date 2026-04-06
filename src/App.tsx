@@ -1049,9 +1049,9 @@ function FidelityView() {
             className="relative"
           >
             {/* Luxury Card Aesthetic */}
-            <div className="aspect-[1.5/1] md:aspect-[1.6/1] w-full bg-gradient-to-br from-ink via-ink/95 to-gold/40 rounded-[32px] md:rounded-[40px] p-6 md:p-12 flex flex-col justify-between border border-gold/40 shadow-2xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gold/40 blur-[80px] -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-gold/20 blur-[80px] translate-y-1/2 -translate-x-1/2" />
+            <div className="aspect-[1.5/1] md:aspect-[1.6/1] w-full bg-gradient-to-br from-ink via-ink/95 to-ink/80 rounded-[32px] md:rounded-[40px] p-6 md:p-12 flex flex-col justify-between border border-gold/20 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gold/15 blur-[100px] -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-gold/10 blur-[100px] translate-y-1/2 -translate-x-1/2" />
 
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-1">
