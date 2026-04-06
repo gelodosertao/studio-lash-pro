@@ -87,7 +87,6 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
   const navItems = [
     { id: 'home', label: 'Início', icon: '🏠' },
     { id: 'catalog', label: 'Serviços', icon: '✨' },
-    { id: 'booking', label: 'Agendar', icon: '📅' },
     { id: 'fidelity', label: 'Clube', icon: '💖' },
   ];
 
