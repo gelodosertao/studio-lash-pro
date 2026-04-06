@@ -100,7 +100,6 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-2xl border-b border-gold/5 px-6 py-4 flex items-center justify-between shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="text-2xl">💖</span>
         <div className="hidden sm:block">
           <h1 className="text-sm font-black uppercase tracking-tighter leading-none">JS Studio Lash</h1>
           <p className="text-[10px] text-gold font-black uppercase tracking-widest leading-none">Pro</p>
@@ -130,15 +129,7 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
         ))}
       </div>
 
-      <div className="flex items-center gap-4">
-        <a
-          href="https://wa.me/5577998242647"
-          target="_blank"
-          className="p-2.5 bg-green-500/10 text-green-600 rounded-full hover:bg-green-500 hover:text-white transition-all text-sm shadow-sm"
-        >
-          📱
-        </a>
-      </div>
+
     </header>
   );
 }
