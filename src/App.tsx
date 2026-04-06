@@ -2006,36 +2006,39 @@ function BookingCard({ booking, allBookings }: { booking: any, allBookings: any[
       </div>
 
       {/* Actions */}
-      <div className="flex flex-wrap items-center gap-3 pt-4 xl:pt-0 border-t xl:border-none border-ink/5">
-        <a
-          href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da JS Studio Lash. Passando para avisar que seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time} foi registrado!`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-12 h-12 bg-green-500/10 text-green-600 rounded-2xl flex items-center justify-center hover:bg-green-500 hover:text-white transition-all shadow-sm"
-          title="Confirmar via WhatsApp"
-        >
-          📱
-        </a>
-        <div className="flex gap-2 flex-1 xl:flex-none">
+      <div className="flex flex-col gap-3 pt-4 xl:pt-0 border-t xl:border-none border-ink/5">
+        {/* Status buttons */}
+        <div className="flex gap-2 flex-wrap">
           {['Confirmado', 'Concluído', 'Cancelado'].map(s => (
             <button
               key={s}
               onClick={() => updateStatus(s)}
               className={cn(
-                "px-3 md:px-4 py-3 rounded-xl text-[7px] md:text-[8px] uppercase tracking-widest font-black transition-all flex-1 md:flex-none",
-                booking.status === s ? "bg-ink text-paper" : "bg-ink/5 opacity-40 hover:opacity-100"
+                "px-4 py-2.5 rounded-xl text-[8px] uppercase tracking-widest font-black transition-all flex-1",
+                booking.status === s ? "bg-ink text-paper shadow" : "bg-ink/5 opacity-50 hover:opacity-100"
               )}
             >
-              {s === 'Confirmado' ? 'Confirm' : s === 'Concluído' ? 'Concluir' : 'Canc'}
+              {s === 'Confirmado' ? '✅ Confirmar' : s === 'Concluído' ? '💎 Concluir' : '❌ Cancelar'}
             </button>
           ))}
+          <button
+            onClick={deleteBooking}
+            className="px-4 py-2.5 border border-red-100 text-red-500 rounded-xl text-[8px] uppercase tracking-widest font-black hover:bg-red-50 transition-all"
+          >
+            🗑️ Apagar
+          </button>
         </div>
-        <button
-          onClick={deleteBooking}
-          className="w-12 h-12 border border-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xs hover:bg-red-50 transition-all shrink-0"
+
+        {/* WhatsApp button — separated */}
+        <a
+          href={`https://wa.me/55${normalizePhone(booking.clientWhatsapp)}?text=${encodeURIComponent(`Olá ${booking.clientName}! Aqui é da JS Studio Lash. Passando para avisar que seu agendamento de ${booking.serviceName} para o dia ${booking.date.split('-').reverse().join('/')} às ${booking.time} foi registrado!`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full py-2.5 bg-green-500/10 text-green-700 rounded-xl text-[8px] uppercase tracking-widest font-black hover:bg-green-500 hover:text-white transition-all"
+          title="Enviar mensagem via WhatsApp"
         >
-          🗑️
-        </button>
+          📱 Enviar Mensagem WhatsApp
+        </a>
       </div>
     </div>
   );
