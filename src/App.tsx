@@ -170,6 +170,7 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
             transition={{ duration: 0.5 }}
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
+            loading="lazy"
           />
         </AnimatePresence>
 
@@ -2249,26 +2250,8 @@ function App() {
       <div className="min-h-screen bg-paper text-ink font-sans selection:bg-gold selection:text-ink overflow-x-hidden">
         {/* Atmospheric Background */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <motion.div
-            animate={{
-              scale: [1, 1.2, 1],
-              rotate: [0, 90, 0],
-              x: [0, 100, 0],
-              y: [0, 50, 0]
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute -top-1/2 -left-1/2 w-full h-full bg-gold/5 blur-[120px] rounded-full"
-          />
-          <motion.div
-            animate={{
-              scale: [1.2, 1, 1.2],
-              rotate: [90, 0, 90],
-              x: [0, -100, 0],
-              y: [0, -50, 0]
-            }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-            className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-olive/5 blur-[120px] rounded-full"
-          />
+          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gold/5 blur-[120px] rounded-full" />
+          <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-olive/5 blur-[120px] rounded-full" />
         </div>
 
         <Navbar activeView={view} setView={setView} />
@@ -2295,32 +2278,7 @@ function App() {
           </AnimatePresence>
         </main>
 
-        {/* Decorative Floating Elements */}
-        <div className="fixed inset-0 pointer-events-none z-0">
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{
-                opacity: [0, 0.2, 0],
-                y: [0, -200],
-                x: Math.random() * 100 - 50
-              }}
-              transition={{
-                duration: 5 + Math.random() * 5,
-                repeat: Infinity,
-                delay: Math.random() * 5
-              }}
-              className="absolute text-2xl"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`
-              }}
-            >
-              ✨
-            </motion.div>
-          ))}
-        </div>
+
       </div>
     </AuthProvider>
   );
