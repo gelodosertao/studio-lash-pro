@@ -357,8 +357,17 @@ function CatalogView({ services, loading, onSelect }: { services: Service[]; loa
 }
 
 function ServiceDetailModal({ service, onClose, onBook }: { service: Service; onClose: () => void; onBook: () => void }) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (modalRef.current) {
+      modalRef.current.scrollTop = 0;
+    }
+  }, []);
+
   return (
     <motion.div
+      ref={modalRef}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -603,6 +612,11 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
     };
 
     fetchMonthAvailability();
+  }, []);
+
+  // Force scroll to top when booking view opens
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   // Fetch booked slots for the selected date
