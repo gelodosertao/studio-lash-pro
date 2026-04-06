@@ -51,11 +51,12 @@ CREATE POLICY "Serviços visíveis para todos" ON services FOR SELECT USING (tru
 CREATE POLICY "Admin pode tudo nos serviços" ON services FOR ALL USING (auth.role() = 'authenticated');
 
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Qualquer um pode agendar" ON bookings FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Qualquer um pode agendar" ON bookings;
+CREATE POLICY "Qualquer um pode agendar" ON bookings FOR INSERT TO public WITH CHECK (true);
 CREATE POLICY "Admin vê todos os agendamentos" ON bookings FOR SELECT USING (auth.role() = 'authenticated');
 CREATE POLICY "Admin edita agendamentos" ON bookings FOR UPDATE USING (auth.role() = 'authenticated');
 CREATE POLICY "Admin deleta agendamentos" ON bookings FOR DELETE USING (auth.role() = 'authenticated');
-CREATE POLICY "Cliente vê seu próprio agendamento via WhatsApp" ON bookings FOR SELECT USING (true); -- Simplificado
+CREATE POLICY "Cliente vê seu próprio agendamento via WhatsApp" ON bookings FOR SELECT TO public USING (true);
 
 ALTER TABLE availability ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Qualquer um vê disponibilidade" ON availability FOR SELECT USING (true);
