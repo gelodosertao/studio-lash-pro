@@ -1267,7 +1267,7 @@ function AdminView({ services }: { services: Service[] }) {
                 activeTab === 'despesas' ? "bg-ink text-paper shadow-xl" : "opacity-40 hover:opacity-100"
               )}
             >
-              Despesas
+              Financeiro
             </button>
             <button
               onClick={() => setActiveTab('servicos')}
