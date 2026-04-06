@@ -1114,7 +1114,7 @@ function FidelityView() {
   );
 }
 
-function AdminView({ services }: { services: Service[] }) {
+function AdminView({ services, refreshServices }: { services: Service[], refreshServices: () => void }) {
   const { user, loading: authLoading } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState<'agenda' | 'clientes' | 'despesas' | 'servicos'>('agenda');
   const [email, setEmail] = useState('');
@@ -1342,6 +1342,7 @@ function AdminView({ services }: { services: Service[] }) {
             <ServicesTab
               services={services}
               onEdit={(s) => { setEditingService(s); setShowServiceModal(true); }}
+              refreshServices={refreshServices}
             />
           </motion.div>
         ) : (
@@ -1383,13 +1384,14 @@ function AdminView({ services }: { services: Service[] }) {
         <ServiceModal
           service={editingService}
           onClose={() => { setShowServiceModal(false); setEditingService(null); }}
+          refreshServices={refreshServices}
         />
       )}
     </div>
   );
 }
 
-function ServicesTab({ services, onEdit }: { services: Service[]; onEdit: (s: Service) => void }) {
+function ServicesTab({ services, onEdit, refreshServices }: { services: Service[]; onEdit: (s: Service) => void; refreshServices: () => void }) {
   const handleDelete = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir este item do catálogo?')) return;
     try {
@@ -1399,6 +1401,7 @@ function ServicesTab({ services, onEdit }: { services: Service[]; onEdit: (s: Se
         .eq('id', id);
 
       if (error) throw error;
+      await refreshServices();
     } catch (error: any) {
       console.error('Error deleting service:', error);
       alert('Erro ao excluir do catálogo: ' + (error.message || 'Erro desconhecido'));
@@ -1465,7 +1468,7 @@ function ServicesTab({ services, onEdit }: { services: Service[]; onEdit: (s: Se
   );
 }
 
-function ServiceModal({ service, onClose }: { service: Service | null; onClose: () => void }) {
+function ServiceModal({ service, onClose, refreshServices }: { service: Service | null; onClose: () => void; refreshServices: () => void }) {
   const [formData, setFormData] = useState({
     name: service?.name || '',
     description: service?.description || '',
@@ -1493,17 +1496,22 @@ function ServiceModal({ service, onClose }: { service: Service | null; onClose: 
       };
 
       if (service) {
-        const { error } = await supabase
+        const { data: updatedData, error } = await supabase
           .from('services')
           .update(data)
-          .eq('id', service.id);
+          .eq('id', service.id)
+          .select();
         if (error) throw error;
+        if (!updatedData || updatedData.length === 0) {
+          throw new Error("Edição foi ignorada pelo banco. Verifique as permissões de acesso.");
+        }
       } else {
         const { error } = await supabase
           .from('services')
           .insert([data]);
         if (error) throw error;
       }
+      await refreshServices();
       onClose();
     } catch (error: any) {
       console.error('Error saving service:', error);
@@ -2179,21 +2187,21 @@ function App() {
   const [loadingServices, setLoadingServices] = useState(true);
   const fcmToken = useFCM();
 
+  const fetchServices = async () => {
+    const { data, error } = await supabase
+      .from('services')
+      .select('*')
+      .order('order', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching services:', error);
+    } else {
+      setServices(data as Service[]);
+    }
+    setLoadingServices(false);
+  };
+
   useEffect(() => {
-    const fetchServices = async () => {
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .order('order', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching services:', error);
-      } else {
-        setServices(data as Service[]);
-      }
-      setLoadingServices(false);
-    };
-
     fetchServices();
 
     // Subscribe to changes
@@ -2260,7 +2268,7 @@ function App() {
               {view === 'catalog' && <CatalogView services={services} loading={loadingServices} onSelect={handleServiceSelect} />}
               {view === 'booking' && <BookingView selectedService={selectedService} onBack={() => setView('catalog')} />}
               {view === 'fidelity' && <FidelityView />}
-              {view === 'admin' && <AdminView services={services} />}
+              {view === 'admin' && <AdminView services={services} refreshServices={fetchServices} />}
             </motion.div>
           </AnimatePresence>
         </main>
