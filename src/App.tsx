@@ -105,13 +105,13 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
         </div>
       </div>
 
-      <div className="flex bg-ink/5 p-2 rounded-2xl gap-1 relative z-10 w-full sm:w-auto overflow-x-auto">
+      <div className="flex bg-ink/5 p-2 rounded-2xl gap-1 relative z-10 justify-center">
         {allItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setView(item.id)}
             className={cn(
-              "flex flex-col items-center gap-1 px-5 py-3 rounded-xl transition-all duration-500 relative min-w-[60px]",
+              "flex flex-col items-center gap-1 px-6 py-3 rounded-xl transition-all duration-500 relative min-w-[64px]",
               activeView === item.id ? "text-paper" : "text-ink/40 hover:text-ink/60"
             )}
           >
@@ -220,13 +220,13 @@ function HomeView({ onStart }: { onStart: () => void }) {
   return (
     <div className="min-h-[calc(100vh-80px)] flex flex-col -mx-6 relative overflow-hidden bg-white">
       {/* Hero Section */}
-      <div className="relative w-full overflow-hidden bg-black flex items-center justify-center" style={{ height: 'calc(75vh - 72px)' }}>
+      <div className="relative w-full overflow-hidden bg-black flex items-start justify-center" style={{ height: 'calc(85vh - 72px)' }}>
         <motion.img
           initial={{ scale: 1.1, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.5 }}
           src="/hero-jessica.jpg"
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover object-top"
           alt="Jéssica Saldanha - JS Studio Lash"
           referrerPolicy="no-referrer"
         />
