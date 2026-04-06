@@ -189,7 +189,7 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
 
         {/* Floating Badges */}
         <div className="absolute top-6 left-6 flex flex-col gap-3 z-20">
-          <div className="px-3 py-1.5 rounded-full bg-gold/90 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-widest shadow-lg">
+          <div className="px-5 py-2 rounded-full bg-gold/90 backdrop-blur-md text-white text-base font-black uppercase tracking-widest shadow-lg">
             R$ {service.price}
           </div>
         </div>
@@ -200,9 +200,9 @@ const ServiceCard: React.FC<{ service: Service; onSelect: (s: Service) => void; 
         <div className="space-y-1">
           <h3 className="text-2xl font-bold tracking-tight">{service.name}</h3>
           <div className="flex items-center gap-2">
-            <span className="text-[9px] uppercase tracking-widest opacity-40 font-bold">🛠️ {service.duration}</span>
-            <div className="w-1 h-1 rounded-full bg-gold/40" />
-            <span className="text-[9px] uppercase tracking-widest text-gold font-black">Manutenção: R$ {service.maintenance_price || (service.price * 0.6).toFixed(0)} 💖</span>
+            <span className="text-xs uppercase tracking-widest opacity-50 font-bold">🛠️ {service.duration}</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-gold/40" />
+            <span className="text-xs uppercase tracking-widest text-gold font-black">Manutenção: R$ {service.maintenance_price || (service.price * 0.6).toFixed(0)} 💖</span>
           </div>
         </div>
 
@@ -400,9 +400,9 @@ function ServiceDetailModal({ service, onClose, onBook }: { service: Service; on
                 <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-black">Procedimento de Elite</p>
               </div>
               <div className="text-right">
-                <p className="text-[8px] uppercase tracking-widest opacity-40 mb-1">A partir de</p>
-                <p className="serif text-3xl text-gold leading-tight">R$ {service.price}</p>
-                <p className="text-[9px] opacity-40 uppercase tracking-widest mt-1">Manutenção: R$ {service.maintenance_price || '--'}</p>
+                <p className="text-[10px] uppercase tracking-widest opacity-50 mb-1 font-bold">A partir de</p>
+                <p className="serif text-4xl text-gold leading-tight">R$ {service.price}</p>
+                <p className="text-xs opacity-60 uppercase tracking-widest mt-1 font-bold">Manutenção: R$ {service.maintenance_price || '--'}</p>
               </div>
             </div>
 
