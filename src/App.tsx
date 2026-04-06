@@ -106,22 +106,22 @@ function Navbar({ activeView, setView }: { activeView: string; setView: (v: stri
         </div>
       </div>
 
-      <div className="flex bg-ink/5 p-1 rounded-full overflow-hidden relative z-10 w-full sm:w-auto overflow-x-auto">
+      <div className="flex bg-ink/5 p-2 rounded-2xl gap-1 relative z-10 w-full sm:w-auto overflow-x-auto">
         {allItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setView(item.id)}
             className={cn(
-              "flex items-center gap-2 px-4 md:px-6 py-2.5 rounded-full transition-all duration-500 relative",
+              "flex flex-col items-center gap-1 px-5 py-3 rounded-xl transition-all duration-500 relative min-w-[60px]",
               activeView === item.id ? "text-paper" : "text-ink/40 hover:text-ink/60"
             )}
           >
-            <span className="text-sm md:text-base">{item.icon}</span>
-            <span className="text-[10px] uppercase font-black tracking-widest hidden md:inline">{item.label}</span>
+            <span className="text-xl leading-none">{item.icon}</span>
+            <span className="text-[9px] uppercase font-black tracking-widest leading-none">{item.label}</span>
             {activeView === item.id && (
               <motion.div
                 layoutId="nav-active-pill"
-                className="absolute inset-0 bg-gold rounded-full -z-10 shadow-lg"
+                className="absolute inset-0 bg-gold rounded-xl -z-10 shadow-lg"
                 transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
               />
             )}
