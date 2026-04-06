@@ -238,9 +238,9 @@ function HomeView({ onStart }: { onStart: () => void }) {
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="absolute bottom-16 left-8 bg-gold px-5 py-2.5 rounded-full text-white shadow-xl flex items-center gap-3"
+          className="absolute bottom-16 left-4 right-4 sm:left-8 sm:right-auto bg-gold px-5 py-2.5 rounded-full text-white shadow-xl flex items-center gap-3 w-fit max-w-[calc(100%-2rem)]"
         >
-          <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+          <span className="w-2 h-2 bg-white rounded-full animate-pulse shrink-0" />
           <span className="text-[10px] uppercase tracking-widest font-black">Agende seu Horário Online ✨</span>
         </motion.div>
       </div>
