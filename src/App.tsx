@@ -65,7 +65,15 @@ const getAvailableSlots = (dateStr: string): string[] => {
   return []; // Monday-Friday
 };
 
-const normalizePhone = (phone: string | undefined | null) => (phone || '').replace(/\D/g, '');
+const normalizePhone = (phone: string | undefined | null) => {
+  if (!phone) return '';
+  let str = phone.replace('https://wa.me/55', '').replace('https://wa.me/', '');
+  str = str.replace(/\D/g, '');
+  if (str.startsWith('55') && str.length > 11) {
+    str = str.substring(2);
+  }
+  return str;
+};
 
 // --- Hooks ---
 
@@ -634,7 +642,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
     try {
       const bookingData = {
         clientName: formData.clientName,
-        clientWhatsapp: normalizePhone(formData.clientWhatsapp),
+        clientWhatsapp: `https://wa.me/55${normalizePhone(formData.clientWhatsapp)}`,
         serviceId: selectedService?.id || 'custom',
         serviceName: `${selectedService?.name || 'Personalizado'} (${formData.serviceType}) - Map: ${formData.mapping}`,
         status: 'Pendente',
@@ -973,7 +981,7 @@ function FidelityView() {
       const { count, error } = await supabase
         .from('bookings')
         .select('*', { count: 'exact', head: true })
-        .eq('clientWhatsapp', normalized)
+        .or(`clientWhatsapp.eq.${normalized},clientWhatsapp.eq.https://wa.me/55${normalized}`)
         .eq('status', 'Concluído');
 
       if (error) throw error;
@@ -1266,12 +1274,7 @@ function AdminView({ services }: { services: Service[] }) {
         </div>
       </header>
 
-      {/* Stats Grid with 3D feel */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <StatCard title="Faturamento Est." value={`R$ ${estimatedRevenue}`} color="text-gold" />
-        <StatCard title="Despesas Totais" value={`R$ ${totalExpenses}`} color="text-red-800" />
-        <StatCard title="Saldo Líquido" value={`R$ ${balance}`} color={balance >= 0 ? "text-gold" : "text-red-800"} highlight />
-      </div>
+
 
       <AnimatePresence mode="wait">
         {activeTab === 'agenda' ? (
@@ -1342,6 +1345,12 @@ function AdminView({ services }: { services: Service[] }) {
               >
                 ➕ Lançar Despesa
               </button>
+            </div>
+            {/* Stats Grid with 3D feel */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <StatCard title="Faturamento Est." value={`R$ ${estimatedRevenue}`} color="text-gold" />
+              <StatCard title="Despesas Totais" value={`R$ ${totalExpenses}`} color="text-red-800" />
+              <StatCard title="Saldo Líquido" value={`R$ ${balance}`} color={balance >= 0 ? "text-gold" : "text-red-800"} highlight />
             </div>
             <div className="grid grid-cols-1 gap-6">
               {expenses.map(expense => (
