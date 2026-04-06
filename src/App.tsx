@@ -559,23 +559,35 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [monthAvailability, setMonthAvailability] = useState<Record<string, number>>({});
 
-  // Check fidelity when WhatsApp number is entered
+  // Retrieve client data (Name and Fidelity) when WhatsApp number is entered
   useEffect(() => {
-    const checkFidelity = async () => {
+    const fetchClientData = async () => {
       const normalized = normalizePhone(formData.clientWhatsapp);
       if (normalized.length >= 10) {
         setCheckingFidelity(true);
         try {
-          const { count, error } = await supabase
+          const { data, error } = await supabase
             .from('bookings')
-            .select('*', { count: 'exact', head: true })
-            .eq('clientWhatsapp', normalized)
-            .eq('status', 'Concluído');
+            .select('clientName, status')
+            .or(`clientWhatsapp.eq.${normalized},clientWhatsapp.eq.https://wa.me/55${normalized}`)
+            .order('created_at', { ascending: false });
 
           if (error) throw error;
-          setFidelityCount(count || 0);
+
+          if (data && data.length > 0) {
+            const lastBooking = data[0];
+            setFormData(prev => ({
+              ...prev,
+              clientName: prev.clientName || lastBooking.clientName
+            }));
+
+            const completedCount = data.filter((b: any) => b.status === 'Concluído').length;
+            setFidelityCount(completedCount);
+          } else {
+            setFidelityCount(0);
+          }
         } catch (error) {
-          console.error("Error checking fidelity:", error);
+          console.error("Error fetching client data:", error);
         } finally {
           setCheckingFidelity(false);
         }
@@ -584,7 +596,7 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
       }
     };
 
-    const timer = setTimeout(checkFidelity, 1000);
+    const timer = setTimeout(fetchClientData, 800);
     return () => clearTimeout(timer);
   }, [formData.clientWhatsapp]);
 
@@ -746,21 +758,21 @@ function BookingView({ selectedService, onBack }: { selectedService: Service | n
         {/* Step 1: Contact Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-4">
-            <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-black block">Nome Completo</label>
-            <input
-              type="text" required placeholder="Seu nome..."
-              className="w-full bg-ink/5 p-6 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all font-bold"
-              value={formData.clientName}
-              onChange={e => setFormData({ ...formData, clientName: e.target.value })}
-            />
-          </div>
-          <div className="space-y-4">
             <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-black block">WhatsApp</label>
             <input
               type="tel" required placeholder="(00) 00000-0000"
               className="w-full bg-ink/5 p-6 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all font-bold"
               value={formData.clientWhatsapp}
               onChange={e => setFormData({ ...formData, clientWhatsapp: e.target.value })}
+            />
+          </div>
+          <div className="space-y-4">
+            <label className="text-[10px] uppercase tracking-[0.3em] opacity-50 font-black block">Nome Completo</label>
+            <input
+              type="text" required placeholder="Seu nome..."
+              className="w-full bg-ink/5 p-6 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all font-bold"
+              value={formData.clientName}
+              onChange={e => setFormData({ ...formData, clientName: e.target.value })}
             />
           </div>
         </div>
