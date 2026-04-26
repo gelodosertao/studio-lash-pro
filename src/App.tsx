@@ -1129,11 +1129,28 @@ function AdminView({ services, refreshServices }: { services: Service[], refresh
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [forgotPassword, setForgotPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isPasswordRecoveryMode, setIsPasswordRecoveryMode] = useState(false);
   const [bookings, setBookings] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
+
+  // Detect password recovery event from Supabase
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, _session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsPasswordRecoveryMode(true);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -1190,6 +1207,70 @@ function AdminView({ services, refreshServices }: { services: Service[], refresh
 
   if (authLoading) return <div className="py-32 text-center serif text-4xl animate-pulse">Carregando...</div>;
 
+  // Show password update form after clicking the recovery link from email
+  if (user && isPasswordRecoveryMode) {
+    return (
+      <div className="max-w-md mx-auto py-20 space-y-12">
+        <header className="text-center space-y-4">
+          <div className="w-20 h-20 bg-gold/20 rounded-full flex items-center justify-center text-4xl mx-auto">🔐</div>
+          <h2 className="text-4xl font-black">Nova <span className="text-gold">Senha</span></h2>
+          <p className="opacity-40 text-xs uppercase tracking-widest font-bold">Defina sua nova senha de acesso</p>
+        </header>
+
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setAuthError('');
+
+            if (newPassword.length < 6) {
+              setAuthError('A senha deve ter pelo menos 6 caracteres.');
+              return;
+            }
+            if (newPassword !== confirmNewPassword) {
+              setAuthError('As senhas não coincidem.');
+              return;
+            }
+
+            setIsUpdatingPassword(true);
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+            if (error) {
+              setAuthError('Erro ao atualizar senha: ' + error.message);
+            } else {
+              setIsPasswordRecoveryMode(false);
+              setNewPassword('');
+              setConfirmNewPassword('');
+              alert('✅ Senha atualizada com sucesso!');
+            }
+            setIsUpdatingPassword(false);
+          }}
+          className="bg-white p-10 rounded-[32px] border border-ink/5 shadow-2xl space-y-6"
+        >
+          <div className="space-y-4">
+            <input
+              type="password" placeholder="Nova senha" required minLength={6}
+              value={newPassword} onChange={e => setNewPassword(e.target.value)}
+              className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
+            />
+            <input
+              type="password" placeholder="Confirmar nova senha" required minLength={6}
+              value={confirmNewPassword} onChange={e => setConfirmNewPassword(e.target.value)}
+              className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
+            />
+          </div>
+          {authError && <p className="text-red-500 text-[10px] text-center font-bold uppercase tracking-widest">{authError}</p>}
+          <button
+            type="submit"
+            disabled={isUpdatingPassword}
+            className="w-full py-6 bg-gold text-white rounded-2xl font-black uppercase tracking-widest shadow-xl active:scale-95 disabled:opacity-50 transition-all"
+          >
+            {isUpdatingPassword ? 'Atualizando...' : 'Salvar Nova Senha ✅'}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <div className="max-w-md mx-auto py-20 space-y-12">
@@ -1198,38 +1279,137 @@ function AdminView({ services, refreshServices }: { services: Service[], refresh
           <p className="opacity-40 text-xs uppercase tracking-widest font-bold">Acesso Restrito</p>
         </header>
 
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setIsLoggingIn(true);
-            setAuthError('');
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) setAuthError('Credenciais inválidas. Tente novamente.');
-            setIsLoggingIn(false);
-          }}
-          className="bg-white p-10 rounded-[32px] border border-ink/5 shadow-2xl space-y-6"
-        >
-          <div className="space-y-4">
-            <input
-              type="email" placeholder="E-mail" required
-              value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
-            />
-            <input
-              type="password" placeholder="Senha" required
-              value={password} onChange={e => setPassword(e.target.value)}
-              className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
-            />
-          </div>
-          {authError && <p className="text-red-500 text-[10px] text-center font-bold uppercase tracking-widest">{authError}</p>}
-          <button
-            type="submit"
-            disabled={isLoggingIn}
-            className="w-full py-6 bg-gold text-white rounded-2xl font-black uppercase tracking-widest shadow-xl active:scale-95 disabled:opacity-50 transition-all"
+        {!forgotPassword ? (
+          /* Login Form */
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setIsLoggingIn(true);
+              setAuthError('');
+              const { error } = await supabase.auth.signInWithPassword({ email, password });
+              if (error) setAuthError('Credenciais inválidas. Tente novamente.');
+              setIsLoggingIn(false);
+            }}
+            className="bg-white p-10 rounded-[32px] border border-ink/5 shadow-2xl space-y-6"
           >
-            {isLoggingIn ? 'Entrando...' : 'Entrar no Painel 🔑'}
-          </button>
-        </form>
+            <div className="space-y-4">
+              <input
+                type="email" placeholder="E-mail" required
+                value={email} onChange={e => setEmail(e.target.value)}
+                className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
+              />
+              <input
+                type="password" placeholder="Senha" required
+                value={password} onChange={e => setPassword(e.target.value)}
+                className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
+              />
+            </div>
+            {authError && <p className="text-red-500 text-[10px] text-center font-bold uppercase tracking-widest">{authError}</p>}
+            <button
+              type="submit"
+              disabled={isLoggingIn}
+              className="w-full py-6 bg-gold text-white rounded-2xl font-black uppercase tracking-widest shadow-xl active:scale-95 disabled:opacity-50 transition-all"
+            >
+              {isLoggingIn ? 'Entrando...' : 'Entrar no Painel 🔑'}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setForgotPassword(true); setAuthError(''); setResetEmailSent(false); }}
+              className="w-full text-center text-xs text-gold/80 hover:text-gold font-bold uppercase tracking-widest transition-colors py-2"
+            >
+              Esqueceu sua senha? 🔑
+            </button>
+          </form>
+        ) : (
+          /* Password Recovery Form */
+          <div className="bg-white p-10 rounded-[32px] border border-ink/5 shadow-2xl space-y-6">
+            {!resetEmailSent ? (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setIsResettingPassword(true);
+                  setAuthError('');
+
+                  const redirectUrl = `${window.location.origin}${window.location.pathname}#admin`;
+
+                  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: redirectUrl,
+                  });
+
+                  if (error) {
+                    setAuthError('Erro ao enviar e-mail. Verifique o endereço.');
+                  } else {
+                    setResetEmailSent(true);
+                  }
+                  setIsResettingPassword(false);
+                }}
+                className="space-y-6"
+              >
+                <div className="text-center space-y-2">
+                  <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center text-3xl mx-auto">📧</div>
+                  <h3 className="text-2xl font-black">Recuperar <span className="text-gold">Senha</span></h3>
+                  <p className="opacity-40 text-xs leading-relaxed">
+                    Informe o e-mail cadastrado. Enviaremos um link para redefinir sua senha.
+                  </p>
+                </div>
+                <input
+                  type="email" placeholder="Seu e-mail cadastrado" required
+                  value={email} onChange={e => setEmail(e.target.value)}
+                  className="w-full bg-ink/5 p-5 rounded-2xl outline-none focus:ring-2 focus:ring-gold transition-all"
+                />
+                {authError && <p className="text-red-500 text-[10px] text-center font-bold uppercase tracking-widest">{authError}</p>}
+                <button
+                  type="submit"
+                  disabled={isResettingPassword}
+                  className="w-full py-6 bg-gold text-white rounded-2xl font-black uppercase tracking-widest shadow-xl active:scale-95 disabled:opacity-50 transition-all"
+                >
+                  {isResettingPassword ? 'Enviando...' : 'Enviar Link de Recuperação 📧'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setForgotPassword(false); setAuthError(''); }}
+                  className="w-full text-center text-xs opacity-40 hover:opacity-100 font-bold uppercase tracking-widest transition-opacity py-2"
+                >
+                  ← Voltar ao Login
+                </button>
+              </form>
+            ) : (
+              /* Success message */
+              <div className="text-center space-y-6 py-4">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-4xl mx-auto"
+                >
+                  ✅
+                </motion.div>
+                <div className="space-y-3">
+                  <h3 className="text-2xl font-black">E-mail <span className="text-gold">Enviado!</span></h3>
+                  <p className="opacity-50 text-sm leading-relaxed">
+                    Verifique sua caixa de entrada (e a pasta de spam) para o link de recuperação de senha.
+                  </p>
+                  <p className="text-[10px] uppercase tracking-widest opacity-30 font-black pt-2">
+                    Enviado para: {email}
+                  </p>
+                </div>
+                <div className="space-y-3 pt-4">
+                  <button
+                    onClick={() => { setForgotPassword(false); setResetEmailSent(false); setAuthError(''); }}
+                    className="w-full py-5 bg-ink text-paper rounded-2xl font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all text-xs"
+                  >
+                    Voltar ao Login 🔑
+                  </button>
+                  <button
+                    onClick={() => { setResetEmailSent(false); }}
+                    className="w-full text-center text-xs opacity-40 hover:opacity-100 font-bold uppercase tracking-widest transition-opacity py-2"
+                  >
+                    Reenviar e-mail
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   }
